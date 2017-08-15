@@ -69,6 +69,23 @@ module cpu;
 
 
   // ==========================
+  // Memory
+  // ==========================
+
+  // Memory Address Register
+  wire [7:0] mar_bus;
+  reg c_mi = 0;
+  register mar (bus, clk, c_mi, reset, mar_bus);
+
+  // RAM
+  wire [7:0] mem_out;
+  reg c_ri = 0;
+  reg c_ro = 0;
+  memory mem (clk, mar_bus, bus, c_ro, c_ri, mem_out);
+  tristate_buffer mem_buff (mem_out, c_ro, bus);
+
+
+  // ==========================
   // Tests
   // ==========================
 
