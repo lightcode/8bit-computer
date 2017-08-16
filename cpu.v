@@ -91,7 +91,7 @@ module cpu;
 
 
   // ==========================
-  // Decoder
+  // Control
   // ==========================
 
   wire [3:0] cycle;
@@ -116,7 +116,7 @@ module cpu;
   assign c_zi   = (state == `STATE_FETCH_ARG);
   assign c_zo   = (state == `STATE_LOAD_Z);
 
-  decoder dec (opcode, cycle, state);
+  control ctrl (opcode, cycle, state);
 
   counter #(.N(4)) cycle_count (clk, , , c_next, cycle);
 

@@ -1,4 +1,4 @@
-module decoder(opcode, cycle, state);
+module control(opcode, cycle, state);
 
   `include "parameters.v"
 
