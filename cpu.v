@@ -12,8 +12,8 @@ module cpu;
 
   wire clk;
   wire nclk;
-  reg stop = 0;
-  clock sys_clk (stop, clk, nclk);
+  reg enable_clk = 0;
+  clock sys_clk (enable_clk, nclk, clk);
 
   always @(negedge clk)
     $display("-----");
@@ -27,19 +27,19 @@ module cpu;
   wire [7:0] regA_bus;
   wire c_ao;
   wire c_ai;
-  register regA (bus, clk, c_ai, reset, regA_bus);
+  register regA (bus, nclk, c_ai, reset, regA_bus);
   tristate_buffer regA_buff (regA_bus, c_ao, bus);
 
   // B register
   wire [7:0] regB_bus;
   wire c_bi;
-  register regB (bus, clk, c_bi, reset, regB_bus);
+  register regB (bus, nclk, c_bi, reset, regB_bus);
 
   // Z register
   wire [7:0] regZ_bus;
   wire c_zo;
   wire c_zi;
-  register regZ (bus, clk, c_zi, reset, regZ_bus);
+  register regZ (bus, nclk, c_zi, reset, regZ_bus);
   tristate_buffer regZ_buff (regZ_bus, c_zo, bus);
 
   // Instruction Register
@@ -80,13 +80,13 @@ module cpu;
   // Memory Address Register
   wire [7:0] mar_bus;
   wire c_mi;
-  register mar (bus, clk, c_mi, reset, mar_bus);
+  register mar (bus, nclk, c_mi, reset, mar_bus);
 
   // RAM
   wire [7:0] mem_out;
   wire c_ri;
   wire c_ro;
-  memory mem (clk, mar_bus, bus, c_ro, c_ri, mem_out);
+  memory mem (clk, mar_bus, bus, c_mi, c_ri, mem_out);
   tristate_buffer mem_buff (mem_out, c_ro, bus);
 
 
@@ -110,7 +110,7 @@ module cpu;
   assign c_ii   = (state == `STATE_FETCH_INST);
   assign c_j    = (state == `STATE_JUMP_Z);
   assign c_mi   = (state == `STATE_FETCH_PC) || (state == `STATE_LOAD_Z);
-  assign c_next = (state == `STATE_NEXT);
+  assign c_next = (state == `STATE_NEXT) || (reset == 1);
   assign c_oi   = (state == `STATE_OUT_A);
   assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
   assign c_zi   = (state == `STATE_FETCH_ARG);
@@ -129,9 +129,9 @@ module cpu;
     # 10 reset = 1;
     # 10 reset = 0;
     # 10 $monitor(
-      "[%t : %b/%b] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, NEXT: %1b, CO: %1b, MI: %1b, II: %1b, RO: %1b, mar: %h, ins: %h, mem: %h",
-      $time, clk, nclk, bus, pc_out, cycle, state, opcode, c_next, c_co, c_mi, c_ii, c_ro, mar_bus, regI_bus, mem_out);
-    # 10 stop = 1;
+      "[%t : %b/%b] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, a: %h, b: %h, alu: %h NEXT: %1b, CO: %1b, MI: %1b, II: %1b, RO: %1b, mar: %h, ins: %h, mem: %h",
+      $time, clk, nclk, bus, pc_out, cycle, state, opcode, regA_bus, regB_bus, sum, c_next, c_co, c_mi, c_ii, c_ro, mar_bus, regI_bus, mem_out);
+    # 10 enable_clk = 1;
     # 2000 $stop;
   end
 
