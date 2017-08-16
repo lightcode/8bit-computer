@@ -1,9 +1,13 @@
-module clock(clk);
+module clock(enable, clk, clk_inv);
 
+  input wire enable;
   output reg clk = 0;
+  output wire clk_inv;
 
   always begin
-    #5 clk = !clk;
+    #5 clk = !clk && enable;
   end
+
+  assign clk_inv = ~clk;
 
 endmodule

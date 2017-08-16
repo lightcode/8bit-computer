@@ -13,9 +13,7 @@ module cpu;
   wire clk;
   wire nclk;
   reg stop = 0;
-  clock sys_clk (c1);
-  assign clk = c1 && stop;
-  assign nclk = ~clk;
+  clock sys_clk (stop, clk, nclk);
 
   always @(negedge clk)
     $display("-----");
