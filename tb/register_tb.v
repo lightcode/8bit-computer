@@ -1,16 +1,17 @@
-module test;
+module register_tb;
 
   reg [7:0] in = 15;
 
   /* Make a reset that pulses once. */
   reg reset = 0;
-  reg oc = 1;
+  reg enable = 1;
 
   initial begin
      # 17 reset = 1;
      # 10  in = 10;
-     # 10  oc = 0;
-     # 10  oc = 1;
+     # 10  enable = 0;
+     # 10  in = 5;
+     # 10  enable = 1;
      # 100 $stop;
   end
 
@@ -19,9 +20,10 @@ module test;
   always #5 clk = !clk;
 
   wire [7:0] value;
-  tristate_register r1 (in, oc, clk, reset, value);
+  register r1 (in, clk, enable, reset, value);
 
   initial
-     $monitor("At time %t, value = %h (%0d), outctrl = %d",
-              $time, value, value, oc);
-endmodule // test
+     $monitor("At time %t, value = %h (%0d), enable = %b",
+              $time, value, value, enable);
+
+endmodule
