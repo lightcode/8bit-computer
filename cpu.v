@@ -90,17 +90,15 @@ module cpu;
   tristate_buffer mem_buff (mem_out, c_ro, bus);
 
 
-
-  // ***************************************************************************
-
-  reg toto = 0;
-
+  // ==========================
+  // Decoder
+  // ==========================
 
   wire [3:0] cycle;
   wire [3:0] state;
   wire [3:0] opcode;
 
-  //assign opcode[3:0] = regI_bus[3:0];
+  assign opcode[3:0] = regI_bus[3:0];
 
   assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ALU);
   assign c_ao   = (state == `STATE_OUT_A);
@@ -112,7 +110,7 @@ module cpu;
   assign c_ii   = (state == `STATE_FETCH_INST);
   assign c_j    = (state == `STATE_JUMP_Z);
   assign c_mi   = (state == `STATE_FETCH_PC) || (state == `STATE_LOAD_Z);
-  assign c_next = (state == `STATE_NEXT) || toto == 1;
+  assign c_next = (state == `STATE_NEXT);
   assign c_oi   = (state == `STATE_OUT_A);
   assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
   assign c_zi   = (state == `STATE_FETCH_ARG);
@@ -120,7 +118,7 @@ module cpu;
 
   decoder dec (opcode, cycle, state);
 
-  counter #(.N(4)) cycle_count (clk, , , reset, cycle);
+  counter #(.N(4)) cycle_count (clk, , , c_next, cycle);
 
 
   // ==========================
@@ -131,10 +129,10 @@ module cpu;
     # 10 reset = 1;
     # 10 reset = 0;
     # 10 $monitor(
-      "At time %t[%b/%b], bus = %h, pc_out = %d, cycle = %d, state = %h, opcode = %h, NEXT = %1b, CO = %1b, MI = %1b, II = %1b, RO = %1b, mar = %h, ins = %h, mem = %h",
+      "[%t : %b/%b] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, NEXT: %1b, CO: %1b, MI: %1b, II: %1b, RO: %1b, mar: %h, ins: %h, mem: %h",
       $time, clk, nclk, bus, pc_out, cycle, state, opcode, c_next, c_co, c_mi, c_ii, c_ro, mar_bus, regI_bus, mem_out);
     # 10 stop = 1;
-    # 200 $stop;
+    # 2000 $stop;
   end
 
 endmodule

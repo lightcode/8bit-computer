@@ -16,10 +16,10 @@ module memory(clk, addr, val, get, set, out);
   always @(posedge clk) begin
     if (set) begin
       data[addr] <= val;
-      $display("data[%d] set to %d", addr, val);
+      $display("Memory: set %h to %h", addr, val);
     end else if (get) begin
       out <= data[addr];
-      $display("%d read from data[%d]", data[addr], addr);
+      $display("Memory: read %h from address %h", data[addr], addr);
     end
   end
 
