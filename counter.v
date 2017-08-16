@@ -1,12 +1,15 @@
 module counter(clk, in, sel_in, reset, out);
+
   parameter N = 8;
 
-  input clk, reset, sel_in;
-  input [N-1:0] in;
-  output [N-1:0] out;
+  input wire clk;
+  input wire [N-1:0] in;
+  input wire sel_in;
+  input wire reset;
+  output reg [N-1:0] out;
 
-  reg [N-1:0] out;
-  wire clk, reset;
+  initial
+    out = 0;
 
   always @(posedge clk) begin
     if (sel_in)
@@ -15,7 +18,8 @@ module counter(clk, in, sel_in, reset, out);
       out <= out + 1;
   end
 
-  always @reset
-    if (reset)
-      out = 0;
+  always @(posedge reset) begin
+    out <= 0;
+  end
+
 endmodule

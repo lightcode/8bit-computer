@@ -7,7 +7,11 @@ module memory(clk, addr, val, get, set, out);
   input wire set;
   output reg [7:0] out;
 
-  reg [7:0] data [0:256];
+  reg [7:0] data [0:255];
+
+  initial begin
+    $readmemh("memory.list", data);
+  end
 
   always @(posedge clk) begin
     if (set) begin

@@ -1,8 +1,9 @@
 module clock(clk);
 
-  output clk;
+  output reg clk = 0;
 
-  reg clk = 0;
-  always #2 clk = !clk;
+  always begin
+    #5 clk = !clk;
+  end
 
 endmodule

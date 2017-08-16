@@ -1,6 +1,7 @@
 module cpu;
 
-  wire clock;
+  `include "parameters.v"
+
   wire [7:0] bus;
 
   reg reset = 0;
@@ -9,7 +10,15 @@ module cpu;
   // System clock
   // ==========================
 
-  clock sys_clk (clk);
+  wire clk;
+  wire nclk;
+  reg stop = 0;
+  clock sys_clk (c1);
+  assign clk = c1 && stop;
+  assign nclk = ~clk;
+
+  always @(negedge clk)
+    $display("-----");
 
 
   // ==========================
@@ -18,31 +27,29 @@ module cpu;
 
   // A register
   wire [7:0] regA_bus;
-  reg c_ao = 0;
-  reg c_ai = 0;
+  wire c_ao;
+  wire c_ai;
   register regA (bus, clk, c_ai, reset, regA_bus);
   tristate_buffer regA_buff (regA_bus, c_ao, bus);
 
   // B register
   wire [7:0] regB_bus;
-  reg c_bo = 0;
-  reg c_bi = 0;
+  wire c_bi;
   register regB (bus, clk, c_bi, reset, regB_bus);
-  tristate_buffer regB_buff (regB_bus, c_bo, bus);
 
   // Z register
   wire [7:0] regZ_bus;
-  reg c_zo = 0;
-  reg c_zi = 0;
+  wire c_zo;
+  wire c_zi;
   register regZ (bus, clk, c_zi, reset, regZ_bus);
   tristate_buffer regZ_buff (regZ_bus, c_zo, bus);
 
   // Instruction Register
   wire [7:0] regI_bus;
-  reg c_io = 0;
-  reg c_ii = 0;
-  register regI (bus, clk, c_ii, reset, regI_bus);
-  tristate_buffer regI_buff (regI_bus, c_io, bus);
+  wire c_io;
+  wire c_ii;
+  register regI (bus, nclk, c_ii, reset, regI_bus);
+  //tristate_buffer regI_buff (regI_bus, c_io, bus);
 
 
   // ==========================
@@ -50,10 +57,10 @@ module cpu;
   // ==========================
 
   wire [7:0] pc_out;
-  reg c_co = 0;
-  reg c_ce = 0;
-  reg c_j = 0;
-  counter pc (c_ce, bus, c_j, reset, pc_out);
+  wire c_co;
+  wire c_ci;
+  wire c_j;
+  counter pc (c_ci, bus, c_j, reset, pc_out);
   tristate_buffer pc_buff (pc_out, c_co, bus);
 
 
@@ -62,7 +69,7 @@ module cpu;
   // ==========================
 
   reg cin = 0;
-  reg c_eo = 0;
+  wire c_eo;
   wire [7:0] sum;
   alu alu (cin, cout, regA_bus, regB_bus, sum);
   tristate_buffer sum_buff (sum, c_eo, bus);
@@ -74,15 +81,48 @@ module cpu;
 
   // Memory Address Register
   wire [7:0] mar_bus;
-  reg c_mi = 0;
+  wire c_mi;
   register mar (bus, clk, c_mi, reset, mar_bus);
 
   // RAM
   wire [7:0] mem_out;
-  reg c_ri = 0;
-  reg c_ro = 0;
+  wire c_ri;
+  wire c_ro;
   memory mem (clk, mar_bus, bus, c_ro, c_ri, mem_out);
   tristate_buffer mem_buff (mem_out, c_ro, bus);
+
+
+
+  // ***************************************************************************
+
+  reg toto = 0;
+
+
+  wire [3:0] cycle;
+  wire [3:0] state;
+  wire [3:0] opcode;
+
+  //assign opcode[3:0] = regI_bus[3:0];
+
+  assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ALU);
+  assign c_ao   = (state == `STATE_OUT_A);
+  assign c_bi   = (state == `STATE_RAM_B);
+  assign c_ci   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z);
+  assign c_co   = (state == `STATE_FETCH_PC);
+  assign c_eo   = (state == `STATE_ALU);
+  assign c_halt = (state == `STATE_HALT);
+  assign c_ii   = (state == `STATE_FETCH_INST);
+  assign c_j    = (state == `STATE_JUMP_Z);
+  assign c_mi   = (state == `STATE_FETCH_PC) || (state == `STATE_LOAD_Z);
+  assign c_next = (state == `STATE_NEXT) || toto == 1;
+  assign c_oi   = (state == `STATE_OUT_A);
+  assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
+  assign c_zi   = (state == `STATE_FETCH_ARG);
+  assign c_zo   = (state == `STATE_LOAD_Z);
+
+  decoder dec (opcode, cycle, state);
+
+  counter #(.N(4)) cycle_count (clk, , , reset, cycle);
 
 
   // ==========================
@@ -90,20 +130,13 @@ module cpu;
   // ==========================
 
   initial begin
-    $monitor("At time %t, bus = %h, sum = %d, regA = %d, regB = %d, pc_out = %d", $time, bus, sum, regA_bus, regB_bus, pc_out);
-  end
-
-  initial begin
-    # 1 c_eo = 0;
-    # 1 c_co = 1;
-    # 1 reset = 1;
-    # 1 reset = 0;
-    # 2 c_ce = 1;
-    # 5 c_ce = 1;
-    # 5 c_ai = 1;
-    # 6 c_ao = 0;
-    # 1 c_bi = 1;
-    # 100 $stop;
+    # 10 reset = 1;
+    # 10 reset = 0;
+    # 10 $monitor(
+      "At time %t[%b/%b], bus = %h, pc_out = %d, cycle = %d, state = %h, opcode = %h, NEXT = %1b, CO = %1b, MI = %1b, II = %1b, RO = %1b, mar = %h, ins = %h, mem = %h",
+      $time, clk, nclk, bus, pc_out, cycle, state, opcode, c_next, c_co, c_mi, c_ii, c_ro, mar_bus, regI_bus, mem_out);
+    # 10 stop = 1;
+    # 200 $stop;
   end
 
 endmodule
