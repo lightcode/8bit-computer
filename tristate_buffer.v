@@ -1,11 +1,11 @@
-module tristate_buffer(input_x, enable, output_x);
+module tristate_buffer(in, enable, out);
 
   parameter N = 8;
 
-  input [N-1:0] input_x;
+  input [N-1:0] in;
   input enable;
-  output [N-1:0] output_x;
+  output [N-1:0] out;
 
-  assign output_x = enable ? input_x : 'bz;
+  assign out = enable ? in : 'bz;
 
 endmodule

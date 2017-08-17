@@ -13,7 +13,11 @@ module cpu;
   wire clk;
   wire nclk;
   reg enable_clk = 0;
-  clock sys_clk (enable_clk, nclk, clk);
+  clock m_sys_clk (
+    .enable(enable_clk),
+    .clk(nclk),
+    .clk_inv(clk)
+  );
 
   always @(negedge clk)
     $display("-----");
@@ -24,30 +28,60 @@ module cpu;
   // ==========================
 
   // A register
-  wire [7:0] regA_bus;
+  wire [7:0] rega_out;
   wire c_ao;
   wire c_ai;
-  register regA (bus, nclk, c_ai, reset, regA_bus);
-  tristate_buffer regA_buff (regA_bus, c_ao, bus);
+  register m_rega (
+    .in(bus),
+    .clk(nclk),
+    .enable(c_ai),
+    .reset(reset),
+    .out(rega_out)
+  );
+  tristate_buffer m_rega_buf (
+    .in(rega_out),
+    .enable(c_ao),
+    .out(bus)
+  );
 
   // B register
-  wire [7:0] regB_bus;
+  wire [7:0] regb_out;
   wire c_bi;
-  register regB (bus, nclk, c_bi, reset, regB_bus);
+  register m_regb (
+    .in(bus),
+    .clk(nclk),
+    .enable(c_bi),
+    .reset(reset),
+    .out(regb_out)
+  );
 
   // Z register
-  wire [7:0] regZ_bus;
+  wire [7:0] regz_out;
   wire c_zo;
   wire c_zi;
-  register regZ (bus, nclk, c_zi, reset, regZ_bus);
-  tristate_buffer regZ_buff (regZ_bus, c_zo, bus);
+  register m_regz (
+    .in(bus),
+    .clk(nclk),
+    .enable(c_zi),
+    .reset(reset),
+    .out(regz_out)
+  );
+  tristate_buffer m_regz_buf (
+    .in(regz_out),
+    .enable(c_zo),
+    .out(bus)
+  );
 
   // Instruction Register
-  wire [7:0] regI_bus;
-  wire c_io;
+  wire [7:0] regi_out;
   wire c_ii;
-  register regI (bus, nclk, c_ii, reset, regI_bus);
-  //tristate_buffer regI_buff (regI_bus, c_io, bus);
+  register m_regi (
+    .in(bus),
+    .clk(nclk),
+    .enable(c_ii),
+    .reset(reset),
+    .out(regi_out)
+  );
 
 
   // ==========================
@@ -58,8 +92,12 @@ module cpu;
   wire c_co;
   wire c_ci;
   wire c_j;
-  counter pc (c_ci, bus, c_j, reset, pc_out);
-  tristate_buffer pc_buff (pc_out, c_co, bus);
+  counter m_pc (c_ci, bus, c_j, reset, pc_out);
+  tristate_buffer m_pc_buf (
+    .in(pc_out),
+    .enable(c_co),
+    .out(bus)
+  );
 
 
   // ==========================
@@ -68,9 +106,19 @@ module cpu;
 
   reg cin = 0;
   wire c_eo;
-  wire [7:0] sum;
-  alu alu (cin, cout, regA_bus, regB_bus, sum);
-  tristate_buffer sum_buff (sum, c_eo, bus);
+  wire [7:0] alu_out;
+  alu m_alu (
+    .cin(cin),
+    .cout(cout),
+    .in_a(rega_out),
+    .in_b(regb_out),
+    .sum(alu_out)
+  );
+  tristate_buffer m_alu_buf (
+    .in(alu_out),
+    .enable(c_eo),
+    .out(bus)
+  );
 
 
   // ==========================
@@ -78,16 +126,33 @@ module cpu;
   // ==========================
 
   // Memory Address Register
-  wire [7:0] mar_bus;
+  wire [7:0] mar_out;
   wire c_mi;
-  register mar (bus, nclk, c_mi, reset, mar_bus);
+  register m_mar (
+    .in(bus),
+    .clk(nclk),
+    .enable(c_mi),
+    .reset(reset),
+    .out(mar_out)
+  );
 
   // RAM
-  wire [7:0] mem_out;
+  wire [7:0] ram_out;
   wire c_ri;
   wire c_ro;
-  memory mem (clk, mar_bus, bus, c_mi, c_ri, mem_out);
-  tristate_buffer mem_buff (mem_out, c_ro, bus);
+  memory m_ram (
+    .clk(clk),
+    .addr(mar_out),
+    .val(bus),
+    .get(c_mi),
+    .set(c_ri),
+    .out(ram_out)
+  );
+  tristate_buffer m_ram_buf (
+    .in(ram_out),
+    .enable(c_ro),
+    .out(bus)
+  );
 
 
   // ==========================
@@ -98,7 +163,7 @@ module cpu;
   wire [3:0] state;
   wire [3:0] opcode;
 
-  assign opcode[3:0] = regI_bus[3:0];
+  assign opcode[3:0] = regi_out[3:0];
 
   assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ALU);
   assign c_ao   = (state == `STATE_OUT_A);
@@ -116,9 +181,17 @@ module cpu;
   assign c_zi   = (state == `STATE_FETCH_ARG);
   assign c_zo   = (state == `STATE_LOAD_Z);
 
-  control ctrl (opcode, cycle, state);
+  control m_ctrl (
+    .opcode(opcode),
+    .cycle(cycle),
+    .state(state)
+  );
 
-  counter #(.N(4)) cycle_count (clk, , , c_next, cycle);
+  counter #(.N(4)) m_cycle_count (
+    .clk(clk),
+    .reset(c_next),
+    .out(cycle)
+  );
 
   always @ (posedge c_halt) begin
     $display("Halted.");
@@ -126,7 +199,7 @@ module cpu;
   end
 
   always @ (posedge c_oi) begin
-    $display("Output: %d (%h)", regA_bus, regA_bus);
+    $display("Output: %d (%h)", rega_out, rega_out);
   end
 
 
@@ -139,7 +212,7 @@ module cpu;
     # 10 reset = 0;
     # 10 $monitor(
       "[%t : %b/%b] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, a: %h, b: %h, alu: %h NEXT: %1b, CO: %1b, MI: %1b, II: %1b, RO: %1b, mar: %h, ins: %h, mem: %h",
-      $time, clk, nclk, bus, pc_out, cycle, state, opcode, regA_bus, regB_bus, sum, c_next, c_co, c_mi, c_ii, c_ro, mar_bus, regI_bus, mem_out);
+      $time, clk, nclk, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, c_next, c_co, c_mi, c_ii, c_ro, mar_out, regi_out, ram_out);
     # 10 enable_clk = 1;
     # 20000 $stop; // prevent from looping forever
   end
