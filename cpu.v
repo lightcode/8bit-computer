@@ -109,7 +109,8 @@ module cpu;
     .cout(cout),
     .in_a(rega_out),
     .in_b(regb_out),
-    .sum(alu_out)
+    .out(alu_out),
+    .sub(c_sub)
   );
   tristate_buffer m_alu_buf (
     .in(alu_out),
@@ -162,12 +163,12 @@ module cpu;
 
   assign opcode[3:0] = regi_out[3:0];
 
-  assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ALU);
+  assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ADD) || (state == `STATE_SUB);
   assign c_ao   = (state == `STATE_OUT_A);
   assign c_bi   = (state == `STATE_RAM_B);
   assign c_ci   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z);
   assign c_co   = (state == `STATE_FETCH_PC);
-  assign c_eo   = (state == `STATE_ALU);
+  assign c_eo   = (state == `STATE_ADD) || (state == `STATE_SUB);
   assign c_halt = (state == `STATE_HALT);
   assign c_ii   = (state == `STATE_FETCH_INST);
   assign c_j    = (state == `STATE_JUMP_Z);
@@ -177,6 +178,7 @@ module cpu;
   assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
   assign c_zi   = (state == `STATE_FETCH_ARG);
   assign c_zo   = (state == `STATE_LOAD_Z);
+  assign c_sub  = (state == `STATE_SUB);
 
   control m_ctrl (
     .opcode(opcode),

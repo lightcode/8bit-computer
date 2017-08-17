@@ -8,7 +8,8 @@ OUT_A      = C_AO | C_OI
 LOAD_Z     = C_ZO | C_MI
 RAM_A      = C_RO | C_AI
 RAM_B      = C_RO | C_BI
-ALU        = C_EO | C_AI
+ADD        = C_EO | C_AI
+SUB        = C_EO | C_AI | C_SUB
 ```
 
 ```
@@ -24,6 +25,7 @@ C_J    = JUMP_Z
 C_MI   = FETCH_PC || LOAD_Z
 C_OI   = OUT_A
 C_RO   = FETCH_INST || FETCH_ARG || JUMP_Z || RAM_A || RAM_B
+C_SUB  = SUB
 C_ZI   = FETCH_ARG
 C_ZO   = LOAD_Z
 ```
@@ -31,7 +33,8 @@ C_ZO   = LOAD_Z
 ```
 NOP : FETCH_PC, FETCH_INST
 LDA : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, RAM_A
-ADD : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, RAM_B, ALU
+ADD : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, RAM_B, ADD
+SUB : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, RAM_B, SUB
 OUT : FETCH_PC, FETCH_INST, OUT_A
 JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP_Z
 HLT : FETCH_PC, FETCH_INST, HALT
@@ -50,10 +53,11 @@ HALT         OUT_A             FETCH_PC   [2]
                         (JMP)                  (else)
                          NEXT                  LOAD_Z     [4]
                                          |-------+-------|
-                                       (LDA)           (ADD)
+                                       (LDA)           (else)
                                        RAM_A           RAM_B   [5]
                                          |               |
-                                        NEXT            ALU    [6]
-                                                         |
-                                                        NEXT   [7]
+                                         |        |------+-------|
+                                        NEXT     ADD            SUB   [6]
+                                                  |              |
+                                                 NEXT          NEXT   [7]
 ```
