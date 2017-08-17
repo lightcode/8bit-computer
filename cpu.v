@@ -120,6 +120,15 @@ module cpu;
 
   counter #(.N(4)) cycle_count (clk, , , c_next, cycle);
 
+  always @ (posedge c_halt) begin
+    $display("Halted.");
+    $stop;
+  end
+
+  always @ (posedge c_oi) begin
+    $display("Output: %d (%h)", regA_bus, regA_bus);
+  end
+
 
   // ==========================
   // Tests
@@ -132,7 +141,7 @@ module cpu;
       "[%t : %b/%b] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, a: %h, b: %h, alu: %h NEXT: %1b, CO: %1b, MI: %1b, II: %1b, RO: %1b, mar: %h, ins: %h, mem: %h",
       $time, clk, nclk, bus, pc_out, cycle, state, opcode, regA_bus, regB_bus, sum, c_next, c_co, c_mi, c_ii, c_ro, mar_bus, regI_bus, mem_out);
     # 10 enable_clk = 1;
-    # 2000 $stop;
+    # 20000 $stop; // prevent from looping forever
   end
 
 endmodule
