@@ -19,9 +19,6 @@ module cpu;
     .clk_inv(clk)
   );
 
-  always @(negedge clk)
-    $display("-----");
-
 
   // ==========================
   // Registers
@@ -211,8 +208,8 @@ module cpu;
     # 10 reset = 1;
     # 10 reset = 0;
     # 10 $monitor(
-      "[%t : %b/%b] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, a: %h, b: %h, alu: %h NEXT: %1b, CO: %1b, MI: %1b, II: %1b, RO: %1b, mar: %h, ins: %h, mem: %h",
-      $time, clk, nclk, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, c_next, c_co, c_mi, c_ii, c_ro, mar_out, regi_out, ram_out);
+      "[%t] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, mem: %h",
+      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, mar_out, regi_out, ram_out);
     # 10 enable_clk = 1;
     # 20000 $stop; // prevent from looping forever
   end
