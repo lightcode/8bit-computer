@@ -1,10 +1,10 @@
-module control(opcode, cycle, state);
+module control(
+  input wire [3:0] opcode,
+  input wire [3:0] cycle,
+  output reg [3:0] state
+);
 
   `include "parameters.v"
-
-  input wire [3:0] opcode;
-  input wire [3:0] cycle;
-  output reg [3:0] state;
 
   always @ (cycle) begin
     case (cycle)

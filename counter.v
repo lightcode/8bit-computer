@@ -1,12 +1,12 @@
-module counter(clk, in, sel_in, reset, out);
+module counter(
+  input wire clk,
+  input wire [N-1:0] in,
+  input wire sel_in,
+  input wire reset,
+  output reg [N-1:0] out
+);
 
   parameter N = 8;
-
-  input wire clk;
-  input wire [N-1:0] in;
-  input wire sel_in;
-  input wire reset;
-  output reg [N-1:0] out;
 
   initial
     out = 0;
