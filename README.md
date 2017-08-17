@@ -1,3 +1,6 @@
+Simple 8-bit computer in Verilog
+================================
+
 ```
 FETCH_PC   = C_CO | C_MI
 FETCH_INST = C_CI | C_RO | C_II
