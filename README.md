@@ -1,6 +1,9 @@
 Simple 8-bit computer in Verilog
 ================================
 
+This computer is inspired by [Ben Eater's computer](https://eater.net/8bit/) and by [Edmund Horner's CPU](https://github.com/ejrh/cpu).
+
+
 ## How to use it
 
 Build an exemple:
@@ -76,3 +79,9 @@ Graph of the FSM:
                                                             |              |
 [7]                                                        NEXT          NEXT
 ```
+
+## Resources
+
+* [ejrh's CPU in Verilog](https://github.com/ejrh/cpu)
+* [Ben Eater's video series](https://eater.net/8bit/)
+* [Steven Bell's microprocessor](https://stanford.edu/~sebell/oc_projects/ic_design_finalreport.pdf)
