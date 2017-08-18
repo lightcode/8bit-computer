@@ -1,6 +1,21 @@
 Simple 8-bit computer in Verilog
 ================================
 
+## How to use it
+
+Build an exemple:
+
+```
+./asm/asm.py asm/multiplication.asm > memory.list
+```
+
+Run the computer:
+
+```
+make clean_computer && make run_computer
+```
+
+
 ## Instruction decoder and machine state
 
 List of instruction associated with states:
