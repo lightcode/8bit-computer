@@ -89,7 +89,13 @@ module cpu;
   wire c_co;
   wire c_ci;
   wire c_j;
-  counter m_pc (c_ci, bus, c_j, reset, pc_out);
+  counter m_pc (
+    .clk(c_ci),
+    .in(bus),
+    .sel_in(c_j),
+    .reset(reset),
+    .out(pc_out)
+  );
   tristate_buffer m_pc_buf (
     .in(pc_out),
     .enable(c_co),
@@ -165,22 +171,26 @@ module cpu;
 
   assign opcode[3:0] = regi_out[3:0];
 
-  assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ADD) || (state == `STATE_SUB);
+  assign c_ai   = state == `STATE_RAM_A || state == `STATE_ADD || state == `STATE_SUB;
   assign c_ao   = state == `STATE_OUT_A || state == `STATE_STORE_A;
-  assign c_bi   = (state == `STATE_RAM_B);
-  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_FETCH_ARG || state == `STATE_JUMP || state == `STATE_JUMP_IF_ZERO || state == `STATE_JUMP_IF_NOT_ZERO) && nclk;
-  assign c_co   = (state == `STATE_FETCH_PC);
-  assign c_eo   = (state == `STATE_ADD) || (state == `STATE_SUB);
-  assign c_halt = (state == `STATE_HALT);
-  assign c_ii   = (state == `STATE_FETCH_INST);
-  assign c_j    = (state == `STATE_JUMP) || (state == `STATE_JUMP_IF_ZERO && eq_zero) || (state == `STATE_JUMP_IF_NOT_ZERO && !eq_zero);
-  assign c_mi   = (state == `STATE_FETCH_PC) || (state == `STATE_LOAD_Z);
-  assign c_next = (state == `STATE_NEXT) || (reset == 1);
-  assign c_oi   = (state == `STATE_OUT_A);
-  assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP) || (state == `STATE_JUMP_IF_ZERO && eq_zero) || (state == `STATE_JUMP_IF_NOT_ZERO && !eq_zero) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
-  assign c_zi   = (state == `STATE_FETCH_ARG);
-  assign c_zo   = (state == `STATE_LOAD_Z);
-  assign c_sub  = (state == `STATE_SUB);
+  assign c_bi   = state == `STATE_RAM_B;
+  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_FETCH_ARG ||
+      state == `STATE_JUMP || state == `STATE_JUMP_IF_ZERO || state == `STATE_JUMP_IF_NOT_ZERO) && nclk;
+  assign c_co   = state == `STATE_FETCH_PC;
+  assign c_eo   = state == `STATE_ADD || state == `STATE_SUB;
+  assign c_halt = state == `STATE_HALT;
+  assign c_ii   = state == `STATE_FETCH_INST;
+  assign c_j    = state == `STATE_JUMP || (state == `STATE_JUMP_IF_ZERO && eq_zero) ||
+      (state == `STATE_JUMP_IF_NOT_ZERO && !eq_zero);
+  assign c_mi   = state == `STATE_FETCH_PC || state == `STATE_LOAD_Z;
+  assign c_next = state == `STATE_NEXT || reset;
+  assign c_oi   = state == `STATE_OUT_A;
+  assign c_ro   = state == `STATE_FETCH_INST || state == `STATE_FETCH_ARG || state == `STATE_JUMP ||
+      (state == `STATE_JUMP_IF_ZERO && eq_zero) || (state == `STATE_JUMP_IF_NOT_ZERO && !eq_zero) ||
+      state == `STATE_RAM_A || state == `STATE_RAM_B;
+  assign c_zi   = state == `STATE_FETCH_ARG;
+  assign c_zo   = state == `STATE_LOAD_Z;
+  assign c_sub  = state == `STATE_SUB;
   assign c_ri   = state == `STATE_STORE_A;
 
   control m_ctrl (
