@@ -22,12 +22,16 @@ module control(
         if (opcode == `OP_HLT || opcode == `OP_OUT)
           state = `STATE_NEXT;
         else if (opcode == `OP_JMP)
-          state = `STATE_JUMP_Z;
+          state = `STATE_JUMP;
+        else if (opcode == `OP_JEZ)
+          state = `STATE_JUMP_IF_ZERO;
+        else if (opcode == `OP_JNZ)
+          state = `STATE_JUMP_IF_NOT_ZERO;
         else
           state = `STATE_FETCH_ARG;
       end
-      4: state = (opcode == `OP_JMP) ? `STATE_NEXT : `STATE_LOAD_Z;
-      5: state = (opcode == `OP_LDA) ? `STATE_RAM_A : `STATE_RAM_B;
+      4: state = (opcode == `OP_JMP || opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_NEXT : `STATE_LOAD_Z;
+      5: state = (opcode == `OP_LDA) ? `STATE_RAM_A : (opcode == `OP_STA) ? `STATE_STORE_A : `STATE_RAM_B;
       6: state = (opcode == `OP_LDA) ? `STATE_NEXT : (opcode == `OP_ADD) ? `STATE_ADD : `STATE_SUB;
       7: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);

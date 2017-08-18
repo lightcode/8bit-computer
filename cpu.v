@@ -103,6 +103,7 @@ module cpu;
 
   reg cin = 0;
   wire c_eo;
+  wire eq_zero; // high when reg A is equal to 0
   wire [7:0] alu_out;
   alu m_alu (
     .cin(cin),
@@ -110,7 +111,8 @@ module cpu;
     .in_a(rega_out),
     .in_b(regb_out),
     .out(alu_out),
-    .sub(c_sub)
+    .sub(c_sub),
+    .eq_zero(eq_zero)
   );
   tristate_buffer m_alu_buf (
     .in(alu_out),
@@ -164,21 +166,22 @@ module cpu;
   assign opcode[3:0] = regi_out[3:0];
 
   assign c_ai   = (state == `STATE_RAM_A) || (state == `STATE_ADD) || (state == `STATE_SUB);
-  assign c_ao   = (state == `STATE_OUT_A);
+  assign c_ao   = state == `STATE_OUT_A || state == `STATE_STORE_A;
   assign c_bi   = (state == `STATE_RAM_B);
-  assign c_ci   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z);
+  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_FETCH_ARG || state == `STATE_JUMP || state == `STATE_JUMP_IF_ZERO || state == `STATE_JUMP_IF_NOT_ZERO) && nclk;
   assign c_co   = (state == `STATE_FETCH_PC);
   assign c_eo   = (state == `STATE_ADD) || (state == `STATE_SUB);
   assign c_halt = (state == `STATE_HALT);
   assign c_ii   = (state == `STATE_FETCH_INST);
-  assign c_j    = (state == `STATE_JUMP_Z);
+  assign c_j    = (state == `STATE_JUMP) || (state == `STATE_JUMP_IF_ZERO && eq_zero) || (state == `STATE_JUMP_IF_NOT_ZERO && !eq_zero);
   assign c_mi   = (state == `STATE_FETCH_PC) || (state == `STATE_LOAD_Z);
   assign c_next = (state == `STATE_NEXT) || (reset == 1);
   assign c_oi   = (state == `STATE_OUT_A);
-  assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP_Z) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
+  assign c_ro   = (state == `STATE_FETCH_INST) || (state == `STATE_FETCH_ARG) || (state == `STATE_JUMP) || (state == `STATE_JUMP_IF_ZERO && eq_zero) || (state == `STATE_JUMP_IF_NOT_ZERO && !eq_zero) || (state == `STATE_RAM_A) || (state == `STATE_RAM_B);
   assign c_zi   = (state == `STATE_FETCH_ARG);
   assign c_zo   = (state == `STATE_LOAD_Z);
   assign c_sub  = (state == `STATE_SUB);
+  assign c_ri   = state == `STATE_STORE_A;
 
   control m_ctrl (
     .opcode(opcode),
@@ -210,10 +213,10 @@ module cpu;
     # 10 reset = 1;
     # 10 reset = 0;
     # 10 $monitor(
-      "[%t] bus: %h, pc: %d, cycle: %d, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, mem: %h",
-      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, mar_out, regi_out, ram_out);
+      "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, mem: %h, eq_zero: %b",
+      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, mar_out, regi_out, ram_out, eq_zero);
     # 10 enable_clk = 1;
-    # 20000 $stop; // prevent from looping forever
+    # 20000 $display("Kill to prevent looping."); $stop;
   end
 
 endmodule
