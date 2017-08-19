@@ -1,23 +1,12 @@
-module cpu;
+module cpu(
+  input wire clk,
+  input wire nclk,
+  input wire reset
+);
 
   `include "parameters.v"
 
   wire [7:0] bus;
-
-  reg reset = 0;
-
-  // ==========================
-  // System clock
-  // ==========================
-
-  wire clk;
-  wire nclk;
-  reg enable_clk = 0;
-  clock m_sys_clk (
-    .enable(enable_clk),
-    .clk(nclk),
-    .clk_inv(clk)
-  );
 
 
   // ==========================
@@ -162,7 +151,7 @@ module cpu;
 
 
   // ==========================
-  // Control
+  // Control logic
   // ==========================
 
   wire [3:0] cycle;
@@ -214,17 +203,13 @@ module cpu;
 
 
   // ==========================
-  // Tests
+  // Monitoring
   // ==========================
 
   initial begin
-    # 10 reset = 1;
-    # 10 reset = 0;
-    # 10 $monitor(
+    # 30 $monitor(
       "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, mem: %h, eq_zero: %b",
       $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, mar_out, regi_out, ram_out, eq_zero);
-    # 10 enable_clk = 1;
-    # 20000 $display("Kill to prevent looping."); $stop;
   end
 
 endmodule
