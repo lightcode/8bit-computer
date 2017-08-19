@@ -21,6 +21,4 @@
 `define STATE_RAM_B            4'h9
 `define STATE_ADD              4'ha
 `define STATE_SUB              4'hb
-`define STATE_JUMP_IF_ZERO     4'hc
-`define STATE_STORE_A          4'hd
-`define STATE_JUMP_IF_NOT_ZERO 4'he
+`define STATE_STORE_A          4'hc

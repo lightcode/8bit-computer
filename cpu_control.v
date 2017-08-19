@@ -1,6 +1,7 @@
-module control(
+module cpu_control(
   input wire [3:0] opcode,
   input wire [3:0] cycle,
+  input wire eq_zero,
   output reg [3:0] state
 );
 
@@ -21,12 +22,10 @@ module control(
       3: begin
         if (opcode == `OP_HLT || opcode == `OP_OUT)
           state = `STATE_NEXT;
-        else if (opcode == `OP_JMP)
+        else if (opcode == `OP_JMP || opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero)
           state = `STATE_JUMP;
-        else if (opcode == `OP_JEZ)
-          state = `STATE_JUMP_IF_ZERO;
-        else if (opcode == `OP_JNZ)
-          state = `STATE_JUMP_IF_NOT_ZERO;
+        else if (opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero)
+          state = `STATE_NEXT;
         else
           state = `STATE_FETCH_ARG;
       end

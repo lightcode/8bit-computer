@@ -30,10 +30,10 @@ ADD : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, RAM_B, ADD
 SUB : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, RAM_B, SUB
 OUT : FETCH_PC, FETCH_INST, OUT_A
 JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP_IF_ZERO
+JEZ : FETCH_PC, FETCH_INST, FETCH_PC [, JUMP ]
 HLT : FETCH_PC, FETCH_INST, HALT
 STA : FETCH_PC, FETCH_INST, FETCH_PC, FETCH_ARG, LOAD_Z, STORE_A
-JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP_IF_NOT_ZERO
+JNZ : FETCH_PC, FETCH_INST, FETCH_PC [, JUMP ]
 ```
 
 List of all states:
@@ -52,8 +52,6 @@ List of all states:
 | `RAM_B`            | `C_RO`, `C_BI`          |
 | `SUB`              | `C_EO`, `C_AI`, `C_SUB` |
 | `STORE_A`          | `C_AO`, `C_RI`          |
-| `JUMP_IF_ZERO`     | `C_CI`, `C_RO`, `C_J`   |
-| `JUMP_IF_NOT_ZERO` | `C_CI`, `C_RO`, `C_J`   |
 
 
 Graph of the FSM:
@@ -64,20 +62,21 @@ Graph of the FSM:
        |------------+------------------------|
      (HLT)        (OUT)                   (else)
 [2]  HALT         OUT_A                   FETCH_PC
-       |            |          |-------------+-------------|
-       |            |        (JMP)         (JEZ)         (else)
-[3]   NEXT         NEXT       JUMP      JUMP_IF_ZERO    FETCH_ARG
-                               |             |             |
-                               |             |           (else)
-[4]                           NEXT         NEXT          LOAD_Z
-                                        |----------|-------+-------|
-                                      (STA)      (LDA)           (else)
-[5]                                  STORE_A     RAM_A           RAM_B
-                                        |          |               |
-                                        |          |        |------+-------|
-[6]                                   NEXT        NEXT     ADD            SUB
-                                                            |              |
-[7]                                                        NEXT          NEXT
+       |            |           |------------+-------------+-------------|
+       |            |         (JNZ)        (JMP)         (JEZ)         (else)
+[3]   NEXT         NEXT         +---------> JUMP <---------+          FETCH_ARG
+                                | si a != 0  |   si a=0    |             |
+                                |            |             |           (else)
+[4]                            NEXT         NEXT         NEXT          LOAD_Z
+                                                                         |
+                                                          |----------|---+-----------|
+                                                        (STA)      (LDA)           (else)
+[5]                                                    STORE_A     RAM_A           RAM_B
+                                                          |          |               |
+                                                          |          |        |------+-------|
+[6]                                                     NEXT        NEXT     ADD            SUB
+                                                                              |              |
+[7]                                                                          NEXT          NEXT
 ```
 
 ## Resources
