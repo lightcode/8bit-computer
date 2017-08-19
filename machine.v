@@ -21,10 +21,40 @@ module machine;
   // CPU
   // ==========================
 
+  wire [7:0] addr_bus;
+  wire [7:0] bus;
+  wire c_mi;
+  wire c_ri;
+  wire c_ro;
   cpu m_cpu (
     .clk(clk),
     .nclk(nclk),
-    .reset(reset)
+    .reset(reset),
+    .addr_bus(addr_bus),
+    .bus(bus),
+    .c_mi(c_mi),
+    .c_ri(c_ri),
+    .c_ro(c_ro)
+  );
+
+
+  // ==========================
+  // RAM
+  // ==========================
+
+  wire [7:0] ram_out;
+  memory m_ram (
+    .clk(clk),
+    .addr(addr_bus),
+    .val(bus),
+    .get(c_mi),
+    .set(c_ri),
+    .out(ram_out)
+  );
+  tristate_buffer m_ram_buf (
+    .in(ram_out),
+    .enable(c_ro),
+    .out(bus)
   );
 
 

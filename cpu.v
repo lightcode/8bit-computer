@@ -1,12 +1,15 @@
 module cpu(
   input wire clk,
   input wire nclk,
-  input wire reset
+  input wire reset,
+  output wire [7:0] addr_bus,
+  output wire c_mi,
+  output wire c_ri,
+  output wire c_ro,
+  inout wire [7:0] bus
 );
 
   `include "parameters.v"
-
-  wire [7:0] bus;
 
 
   // ==========================
@@ -69,6 +72,15 @@ module cpu(
     .out(regi_out)
   );
 
+  // Memory Address Register
+  register m_mar (
+    .in(bus),
+    .clk(nclk),
+    .enable(c_mi),
+    .reset(reset),
+    .out(addr_bus)
+  );
+
 
   // ==========================
   // Program Counter
@@ -112,40 +124,6 @@ module cpu(
   tristate_buffer m_alu_buf (
     .in(alu_out),
     .enable(c_eo),
-    .out(bus)
-  );
-
-
-  // ==========================
-  // Memory
-  // ==========================
-
-  // Memory Address Register
-  wire [7:0] mar_out;
-  wire c_mi;
-  register m_mar (
-    .in(bus),
-    .clk(nclk),
-    .enable(c_mi),
-    .reset(reset),
-    .out(mar_out)
-  );
-
-  // RAM
-  wire [7:0] ram_out;
-  wire c_ri;
-  wire c_ro;
-  memory m_ram (
-    .clk(clk),
-    .addr(mar_out),
-    .val(bus),
-    .get(c_mi),
-    .set(c_ri),
-    .out(ram_out)
-  );
-  tristate_buffer m_ram_buf (
-    .in(ram_out),
-    .enable(c_ro),
     .out(bus)
   );
 
@@ -208,8 +186,8 @@ module cpu(
 
   initial begin
     # 30 $monitor(
-      "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, mem: %h, eq_zero: %b",
-      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, mar_out, regi_out, ram_out, eq_zero);
+      "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, eq_zero: %b",
+      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, addr_bus, regi_out, eq_zero);
   end
 
 endmodule
