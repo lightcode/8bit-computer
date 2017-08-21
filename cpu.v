@@ -124,7 +124,7 @@ module cpu(
   assign c_ai   = state == `STATE_RAM_A || state == `STATE_ADD || state == `STATE_SUB;
   assign c_ao   = state == `STATE_OUT_A || state == `STATE_STORE_A;
   assign c_bi   = state == `STATE_RAM_B;
-  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_JUMP || state == `STATE_LOAD_ADDR) && nclk;
+  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_JUMP || state == `STATE_SKIP_JUMP || state == `STATE_LOAD_ADDR) && nclk;
   assign c_co   = state == `STATE_FETCH_PC;
   assign c_eo   = state == `STATE_ADD || state == `STATE_SUB;
   assign c_halt = state == `STATE_HALT;

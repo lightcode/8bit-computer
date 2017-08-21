@@ -22,14 +22,14 @@ module cpu_control(
       3: begin
         if (opcode == `OP_HLT || opcode == `OP_OUT)
           state = `STATE_NEXT;
+        else if (opcode == `OP_JEZ && !eq_zero || opcode == `OP_JNZ && eq_zero)
+          state = `STATE_SKIP_JUMP;
         else if (opcode == `OP_JMP || opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero)
           state = `STATE_JUMP;
-        else if (opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero)
-          state = `STATE_NEXT;
         else
           state = `STATE_LOAD_ADDR;
       end
-      4: state = (opcode == `OP_JMP || opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_NEXT :
+      4: state = (opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_NEXT :
                  (opcode == `OP_LDA) ? `STATE_RAM_A :
                  (opcode == `OP_STA) ? `STATE_STORE_A : `STATE_RAM_B;
       5: state = (opcode == `OP_LDA) ? `STATE_NEXT : (opcode == `OP_ADD) ? `STATE_ADD : `STATE_SUB;
