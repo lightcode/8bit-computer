@@ -44,23 +44,6 @@ module cpu(
     .out(regb_out)
   );
 
-  // Z register
-  wire [7:0] regz_out;
-  wire c_zo;
-  wire c_zi;
-  register m_regz (
-    .in(bus),
-    .clk(nclk),
-    .enable(c_zi),
-    .reset(reset),
-    .out(regz_out)
-  );
-  tristate_buffer m_regz_buf (
-    .in(regz_out),
-    .enable(c_zo),
-    .out(bus)
-  );
-
   // Instruction Register
   wire [7:0] regi_out;
   wire c_ii;
@@ -152,8 +135,6 @@ module cpu(
   assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST || state == `STATE_JUMP ||
                   state == `STATE_RAM_A || state == `STATE_RAM_B || state == `STATE_LOAD_ADDR;
-  assign c_zi   = 0;
-  assign c_zo   = 0;
   assign c_sub  = state == `STATE_SUB;
   assign c_ri   = state == `STATE_STORE_A;
 
