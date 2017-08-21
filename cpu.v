@@ -141,19 +141,19 @@ module cpu(
   assign c_ai   = state == `STATE_RAM_A || state == `STATE_ADD || state == `STATE_SUB;
   assign c_ao   = state == `STATE_OUT_A || state == `STATE_STORE_A;
   assign c_bi   = state == `STATE_RAM_B;
-  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_FETCH_ARG || state == `STATE_JUMP) && nclk;
+  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_JUMP || state == `STATE_LOAD_ADDR) && nclk;
   assign c_co   = state == `STATE_FETCH_PC;
   assign c_eo   = state == `STATE_ADD || state == `STATE_SUB;
   assign c_halt = state == `STATE_HALT;
   assign c_ii   = state == `STATE_FETCH_INST;
   assign c_j    = state == `STATE_JUMP;
-  assign c_mi   = state == `STATE_FETCH_PC || state == `STATE_LOAD_Z;
+  assign c_mi   = state == `STATE_FETCH_PC || state == `STATE_LOAD_ADDR;
   assign c_next = state == `STATE_NEXT || reset;
   assign c_oi   = state == `STATE_OUT_A;
-  assign c_ro   = state == `STATE_FETCH_INST || state == `STATE_FETCH_ARG || state == `STATE_JUMP ||
-                  state == `STATE_RAM_A || state == `STATE_RAM_B;
-  assign c_zi   = state == `STATE_FETCH_ARG;
-  assign c_zo   = state == `STATE_LOAD_Z;
+  assign c_ro   = state == `STATE_FETCH_INST || state == `STATE_JUMP ||
+                  state == `STATE_RAM_A || state == `STATE_RAM_B || state == `STATE_LOAD_ADDR;
+  assign c_zi   = 0;
+  assign c_zo   = 0;
   assign c_sub  = state == `STATE_SUB;
   assign c_ri   = state == `STATE_STORE_A;
 

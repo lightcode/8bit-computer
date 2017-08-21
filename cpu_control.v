@@ -27,12 +27,13 @@ module cpu_control(
         else if (opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero)
           state = `STATE_NEXT;
         else
-          state = `STATE_FETCH_ARG;
+          state = `STATE_LOAD_ADDR;
       end
-      4: state = (opcode == `OP_JMP || opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_NEXT : `STATE_LOAD_Z;
-      5: state = (opcode == `OP_LDA) ? `STATE_RAM_A : (opcode == `OP_STA) ? `STATE_STORE_A : `STATE_RAM_B;
-      6: state = (opcode == `OP_LDA) ? `STATE_NEXT : (opcode == `OP_ADD) ? `STATE_ADD : `STATE_SUB;
-      7: state = `STATE_NEXT;
+      4: state = (opcode == `OP_JMP || opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_NEXT :
+                 (opcode == `OP_LDA) ? `STATE_RAM_A :
+                 (opcode == `OP_STA) ? `STATE_STORE_A : `STATE_RAM_B;
+      5: state = (opcode == `OP_LDA) ? `STATE_NEXT : (opcode == `OP_ADD) ? `STATE_ADD : `STATE_SUB;
+      6: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
     endcase
   end
