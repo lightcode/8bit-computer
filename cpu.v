@@ -145,7 +145,7 @@ module cpu(
     .state(state)
   );
 
-  counter #(.N(4)) m_cycle_count (
+  counter #(.WIDTH(4)) m_cycle_count (
     .clk(clk),
     .reset(c_next),
     .out(cycle)

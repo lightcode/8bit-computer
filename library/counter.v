@@ -1,12 +1,12 @@
 module counter(
   input wire clk,
-  input wire [N-1:0] in,
+  input wire [WIDTH-1:0] in,
   input wire sel_in,
   input wire reset,
-  output reg [N-1:0] out
+  output reg [WIDTH-1:0] out
 );
 
-  parameter N = 8;
+  parameter WIDTH = 8;
 
   initial
     out = 0;
