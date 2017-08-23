@@ -1,26 +1,28 @@
 module memory(
   input wire clk,
   input wire [7:0] addr,
-  input wire [7:0] val,
-  input wire get,
-  input wire set,
-  output reg [7:0] out
+  input wire we,               // Write Enable (write if we is high else read)
+  input wire oe,               // Enable Output
+  inout wire [7:0] data
 );
 
-  reg [7:0] data [0:255];
+  reg [7:0] mem [0:255];
+  reg [7:0] buffer;
 
   initial begin
-    $readmemh("memory.list", data);
+    $readmemh("memory.list", mem);
   end
 
   always @(posedge clk) begin
-    if (set) begin
-      data[addr] <= val;
-      $display("Memory: set [0x%h] => 0x%h (%d)", addr, val, val);
-    end else if (get) begin
-      out <= data[addr];
-      $display("Memory: read [0x%h] = 0x%h (%d)", addr, data[addr], data[addr]);
+    if (we) begin
+      mem[addr] <= data;
+      $display("Memory: set [0x%h] => 0x%h (%d)", addr, data, data);
+    end else begin
+      buffer <= mem[addr];
+      $display("Memory: read [0x%h] = 0x%h (%d)", addr, mem[addr], mem[addr]);
     end
   end
+
+  assign data = (oe && !we) ? buffer : 8'bz;
 
 endmodule

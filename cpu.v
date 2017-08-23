@@ -3,7 +3,6 @@ module cpu(
   input wire nclk,
   input wire reset,
   output wire [7:0] addr_bus,
-  output wire c_mi,
   output wire c_ri,
   output wire c_ro,
   inout wire [7:0] bus
@@ -56,6 +55,7 @@ module cpu(
   );
 
   // Memory Address Register
+  wire c_mi;
   register m_mar (
     .in(bus),
     .clk(nclk),
