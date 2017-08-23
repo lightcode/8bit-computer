@@ -1,4 +1,4 @@
-module memory(
+module ram(
   input wire clk,
   input wire [7:0] addr,
   input wire we,               // Write Enable (write if we is high else read)

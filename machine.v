@@ -40,7 +40,7 @@ module machine;
   // RAM
   // ==========================
 
-  memory m_ram (
+  ram m_ram (
     .clk(clk),
     .addr(addr_bus),
     .data(bus),

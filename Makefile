@@ -1,5 +1,14 @@
 computer:
-	iverilog -o computer cpu.v counter.v register.v clock.v alu.v tristate_buffer.v memory.v cpu_control.v machine.v
+	iverilog -o computer \
+		alu.v \
+		cpu.v \
+		cpu_control.v \
+		library/clock.v \
+		library/counter.v \
+		library/ram.v \
+		library/register.v \
+		library/tristate_buffer.v \
+		machine.v
 
 run_computer: computer
 	vvp -n computer
