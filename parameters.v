@@ -17,7 +17,6 @@
 `define STATE_OUT_A            4'h5
 `define STATE_RAM_A            4'h6
 `define STATE_RAM_B            4'h7
-`define STATE_ADD              4'h8
-`define STATE_SUB              4'h9
-`define STATE_STORE_A          4'ha
-`define STATE_LOAD_ADDR        4'hb
+`define STATE_STORE_A          4'h8
+`define STATE_LOAD_ADDR        4'h9
+`define STATE_ALU_OP           4'ha

@@ -124,12 +124,12 @@ module cpu(
   wire jump_allowed;
   assign jump_allowed = opcode == `OP_JMP || opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero;
 
-  assign c_ai   = state == `STATE_RAM_A || state == `STATE_ADD || state == `STATE_SUB;
+  assign c_ai   = state == `STATE_RAM_A || state == `STATE_ALU_OP;
   assign c_ao   = state == `STATE_OUT_A || state == `STATE_STORE_A;
   assign c_bi   = state == `STATE_RAM_B;
   assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_JUMP || state == `STATE_LOAD_ADDR) && nclk;
   assign c_co   = state == `STATE_FETCH_PC;
-  assign c_eo   = state == `STATE_ADD || state == `STATE_SUB;
+  assign c_eo   = state == `STATE_ALU_OP;
   assign c_halt = state == `STATE_HALT;
   assign c_ii   = state == `STATE_FETCH_INST;
   assign c_j    = state == `STATE_JUMP && jump_allowed;
@@ -138,7 +138,7 @@ module cpu(
   assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST || (state == `STATE_JUMP && jump_allowed) ||
                   state == `STATE_RAM_A || state == `STATE_RAM_B || state == `STATE_LOAD_ADDR;
-  assign c_sub  = state == `STATE_SUB;
+  assign c_sub  = state == `STATE_ALU_OP && opcode == `OP_SUB;
   assign c_ri   = state == `STATE_STORE_A;
 
   cpu_control m_ctrl (
@@ -169,8 +169,8 @@ module cpu(
 
   initial begin
     # 30 $monitor(
-      "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, eq_zero: %b",
-      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, addr_bus, regi_out, eq_zero);
+      "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, eq_zero: %b, c_sub: %b",
+      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, addr_bus, regi_out, eq_zero, c_sub);
   end
 
 endmodule

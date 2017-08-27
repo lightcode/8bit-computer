@@ -20,9 +20,8 @@ module cpu_control(
                  (opcode == `OP_STA) ? `STATE_STORE_A :
                  (opcode == `OP_ADD || opcode == `OP_SUB) ?`STATE_RAM_B :
                  `STATE_NEXT;
-      5: state = (opcode == `OP_LDA) ? `STATE_NEXT :
-                 (opcode == `OP_ADD) ? `STATE_ADD :
-                 `STATE_SUB;
+      5: state = (opcode == `OP_ADD || opcode == `OP_SUB) ? `STATE_ALU_OP :
+                 `STATE_NEXT;
       6: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
     endcase

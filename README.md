@@ -26,8 +26,8 @@ List of instruction associated with states:
 ```
 NOP : FETCH_PC, FETCH_INST
 LDA : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_A
-ADD : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ADD
-SUB : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, SUB
+ADD : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
+SUB : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
 OUT : FETCH_PC, FETCH_INST, OUT_A
 JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
@@ -40,7 +40,7 @@ List of all states:
 
 | State              | Signal enabled          |
 |--------------------|-------------------------|
-| `ADD`              | `C_EO`, `C_AI`          |
+| `ALU_OP`           | `C_EO`, `C_AI`          |
 | `FETCH_INST`       | `C_CI`, `C_RO`, `C_II`  |
 | `FETCH_PC`         | `C_CO`, `C_MI`          |
 | `HALT`             | `C_HALT`                |
@@ -50,7 +50,6 @@ List of all states:
 | `RAM_A`            | `C_RO`, `C_AI`          |
 | `RAM_B`            | `C_RO`, `C_BI`          |
 | `STORE_A`          | `C_AO`, `C_RI`          |
-| `SUB`              | `C_EO`, `C_AI`, `C_SUB` |
 
 
 Graph of the FSM:
@@ -58,21 +57,21 @@ Graph of the FSM:
 ```
 [0]             FETCH_PC
 [1]            FETCH_INST
-       |------------+--------------------|
-     (HLT)        (OUT)                (else)
-[2]  HALT         OUT_A               FETCH_PC
-       |            |            |-------+-------------------------|
-       |            |       (JNZ/JMP/JEZ)                        (else)
-[3]   NEXT         NEXT         JUMP                           LOAD_ADDR
-                                 |                                 |
-                                 |                       |---------|----------------|
-                                 |                    (STA)      (LDA)           (else)
-[4]                             NEXT                 STORE_A     RAM_A           RAM_B
-                                                         |          |               |
-                                                         |          |        |------+-------|
-[5]                                                    NEXT        NEXT     ADD            SUB
-                                                                             |              |
-[6]                                                                         NEXT          NEXT
+       |------------+-----------------------|
+     (HLT)        (OUT)                   (else)
+[2]  HALT         OUT_A                  FETCH_PC
+       |            |            |----------+--------------|
+       |            |       (JNZ/JMP/JEZ)                (else)
+[3]   NEXT         NEXT         JUMP                   LOAD_ADDR
+                                 |                         |
+                                 |               |---------|-------------|
+                                 |            (STA)      (LDA)       (ADD/SUB)
+[4]                             NEXT         STORE_A     RAM_A         RAM_B
+                                                 |          |            |
+                                                 |          |            |
+[5]                                            NEXT        NEXT       ALU_OP
+                                                                         |
+[6]                                                                    NEXT
 ```
 
 ## Resources
