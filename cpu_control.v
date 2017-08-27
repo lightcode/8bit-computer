@@ -1,7 +1,6 @@
 module cpu_control(
   input wire [3:0] opcode,
   input wire [3:0] cycle,
-  input wire eq_zero,
   output reg [3:0] state
 );
 
@@ -15,8 +14,7 @@ module cpu_control(
                  (opcode == `OP_OUT) ? `STATE_OUT_A :
                  `STATE_FETCH_PC;
       3: state = (opcode == `OP_HLT || opcode == `OP_OUT) ? `STATE_NEXT :
-                 (opcode == `OP_JEZ && !eq_zero || opcode == `OP_JNZ && eq_zero) ? `STATE_SKIP_JUMP :
-                 (opcode == `OP_JMP || opcode == `OP_JEZ && eq_zero || opcode == `OP_JNZ && !eq_zero) ? `STATE_JUMP :
+                 (opcode == `OP_JMP || opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_JUMP :
                  `STATE_LOAD_ADDR;
       4: state = (opcode == `OP_LDA) ? `STATE_RAM_A :
                  (opcode == `OP_STA) ? `STATE_STORE_A :

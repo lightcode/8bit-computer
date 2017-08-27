@@ -21,4 +21,3 @@
 `define STATE_SUB              4'h9
 `define STATE_STORE_A          4'ha
 `define STATE_LOAD_ADDR        4'hb
-`define STATE_SKIP_JUMP        4'hc
