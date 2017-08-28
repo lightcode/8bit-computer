@@ -19,7 +19,6 @@ module ram(
       $display("Memory: set [0x%h] => 0x%h (%d)", addr, data, data);
     end else begin
       buffer <= mem[addr];
-      $display("Memory: read [0x%h] = 0x%h (%d)", addr, mem[addr], mem[addr]);
     end
   end
 
