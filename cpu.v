@@ -140,9 +140,9 @@ module cpu(
   // ==========================
 
   wire [3:0] state;
-  wire [3:0] opcode;
+  wire [7:0] opcode;
 
-  assign opcode[3:0] = regi_out[3:0];
+  assign opcode = regi_out;
 
   wire jump_allowed;
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
@@ -189,8 +189,8 @@ module cpu(
 
   initial begin
     # 30 $monitor(
-      "[%t] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, ins: %h, eq_zero: %b, c_sub: %b",
-      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, addr_bus, regi_out, eq_zero, c_sub);
+      "[%08d] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, eq_zero: %b, c_sub: %b",
+      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, addr_bus, eq_zero, c_sub);
   end
 
 endmodule

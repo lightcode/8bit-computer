@@ -1,5 +1,5 @@
 module cpu_control(
-  input wire [3:0] opcode,
+  input wire [7:0] opcode,
   input wire clk,
   input wire reset_cycle,
   output reg [3:0] state,
