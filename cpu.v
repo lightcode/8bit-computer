@@ -1,14 +1,38 @@
 module cpu(
   input wire clk,
-  input wire nclk,
   input wire reset,
   output wire [7:0] addr_bus,
   output wire c_ri,
   output wire c_ro,
+  output reg mem_clk,
   inout wire [7:0] bus
 );
 
   `include "parameters.v"
+
+  // ==========================
+  // Clocks
+  // ==========================
+
+  reg cycle_clk = 0;
+  reg internal_clk = 0;
+  reg [1:0] cnt = 0;
+  always @ (posedge clk) begin
+    case (cnt)
+      0 : begin
+        {cycle_clk, mem_clk, internal_clk} <= 'b100;
+        cnt <= 1;
+      end
+      1 : begin
+        {cycle_clk, mem_clk, internal_clk} <= 'b010;
+        cnt <= 2;
+      end
+      2 : begin
+        {cycle_clk, mem_clk, internal_clk} <= 'b001;
+        cnt <= 0;
+      end
+    endcase
+  end
 
 
   // ==========================
@@ -21,7 +45,7 @@ module cpu(
   wire c_ai;
   register m_rega (
     .in(bus),
-    .clk(nclk),
+    .clk(internal_clk),
     .enable(c_ai),
     .reset(reset),
     .out(rega_out)
@@ -37,7 +61,7 @@ module cpu(
   wire c_bi;
   register m_regb (
     .in(bus),
-    .clk(nclk),
+    .clk(internal_clk),
     .enable(c_bi),
     .reset(reset),
     .out(regb_out)
@@ -48,7 +72,7 @@ module cpu(
   wire c_ii;
   register m_regi (
     .in(bus),
-    .clk(nclk),
+    .clk(internal_clk),
     .enable(c_ii),
     .reset(reset),
     .out(regi_out)
@@ -58,7 +82,7 @@ module cpu(
   wire c_mi;
   register m_mar (
     .in(bus),
-    .clk(nclk),
+    .clk(internal_clk),
     .enable(c_mi),
     .reset(reset),
     .out(addr_bus)
@@ -74,7 +98,7 @@ module cpu(
   wire c_ci;
   wire c_j;
   counter m_pc (
-    .clk(c_ci),
+    .clk(c_ci & internal_clk),
     .in(bus),
     .sel_in(c_j),
     .reset(reset),
@@ -115,7 +139,6 @@ module cpu(
   // Control logic
   // ==========================
 
-  wire [3:0] cycle;
   wire [3:0] state;
   wire [3:0] opcode;
 
@@ -127,7 +150,7 @@ module cpu(
   assign c_ai   = state == `STATE_RAM_A || state == `STATE_ALU_OP;
   assign c_ao   = state == `STATE_OUT_A || state == `STATE_STORE_A;
   assign c_bi   = state == `STATE_RAM_B;
-  assign c_ci   = (state == `STATE_FETCH_INST || state == `STATE_JUMP || state == `STATE_LOAD_ADDR) && nclk;
+  assign c_ci   = state == `STATE_FETCH_INST || state == `STATE_JUMP || state == `STATE_LOAD_ADDR;
   assign c_co   = state == `STATE_FETCH_PC;
   assign c_eo   = state == `STATE_ALU_OP;
   assign c_halt = state == `STATE_HALT;
@@ -141,16 +164,13 @@ module cpu(
   assign c_sub  = state == `STATE_ALU_OP && opcode == `OP_SUB;
   assign c_ri   = state == `STATE_STORE_A;
 
+  wire [3:0] cycle;
   cpu_control m_ctrl (
     .opcode(opcode),
-    .cycle(cycle),
-    .state(state)
-  );
-
-  counter #(.WIDTH(4)) m_cycle_count (
-    .clk(clk),
-    .reset(c_next),
-    .out(cycle)
+    .state(state),
+    .reset_cycle(c_next),
+    .clk(cycle_clk),
+    .cycle(cycle)
   );
 
   always @ (posedge c_halt) begin

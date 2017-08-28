@@ -1,12 +1,17 @@
 module cpu_control(
   input wire [3:0] opcode,
-  input wire [3:0] cycle,
-  output reg [3:0] state
+  input wire clk,
+  input wire reset_cycle,
+  output reg [3:0] state,
+  output reg [3:0] cycle
 );
 
   `include "parameters.v"
 
-  always @ (cycle) begin
+  initial
+    cycle = 0;
+
+  always @ (posedge clk) begin
     case (cycle)
       0: state = `STATE_FETCH_PC;
       1: state = `STATE_FETCH_INST;
@@ -25,6 +30,11 @@ module cpu_control(
       6: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
     endcase
+    cycle = (cycle > 6) ? 0 : cycle + 1;
+  end
+
+  always @ (posedge reset_cycle) begin
+    cycle = 0;
   end
 
 endmodule

@@ -8,12 +8,10 @@ module machine;
   // ==========================
 
   wire clk;
-  wire nclk;
   reg enable_clk = 0;
   clock m_sys_clk (
     .enable(enable_clk),
-    .clk(nclk),
-    .clk_inv(clk)
+    .clk(clk)
   );
 
 
@@ -25,12 +23,13 @@ module machine;
   wire [7:0] bus;
   wire c_ri;
   wire c_ro;
+  wire mem_clk;
   cpu m_cpu (
     .clk(clk),
-    .nclk(nclk),
     .reset(reset),
     .addr_bus(addr_bus),
     .bus(bus),
+    .mem_clk(mem_clk),
     .c_ri(c_ri),
     .c_ro(c_ro)
   );
@@ -41,7 +40,7 @@ module machine;
   // ==========================
 
   ram m_ram (
-    .clk(clk),
+    .clk(mem_clk),
     .addr(addr_bus),
     .data(bus),
     .we(c_ri),
