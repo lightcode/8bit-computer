@@ -117,11 +117,12 @@ module cpu(
 
   reg cin = 0;
   wire c_eo;
+  wire c_sub;
   wire eq_zero; // high when reg A is equal to 0
   wire [7:0] alu_out;
   alu m_alu (
     .cin(cin),
-    .cout(cout),
+    .cout(),
     .in_a(rega_out),
     .in_b(regb_out),
     .out(alu_out),
@@ -139,6 +140,7 @@ module cpu(
   // Control logic
   // ==========================
 
+  wire c_halt, c_next, c_oi;
   wire [3:0] state;
   wire [7:0] opcode;
 
