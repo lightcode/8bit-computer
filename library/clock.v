@@ -5,7 +5,7 @@ module clock(
 );
 
   always begin
-    #5 clk = !clk && enable;
+    #5 clk = ~clk & enable;
   end
 
   assign clk_inv = ~clk;

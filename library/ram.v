@@ -23,6 +23,6 @@ module ram(
     end
   end
 
-  assign data = (oe && !we) ? buffer : 'bz;
+  assign data = (oe & ~we) ? buffer : 'bz;
 
 endmodule
