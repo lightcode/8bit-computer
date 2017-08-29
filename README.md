@@ -38,18 +38,22 @@ JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 
 List of all states:
 
-| State              | Signal enabled          |
-|--------------------|-------------------------|
-| `ALU_OP`           | `C_EO`, `C_AI`          |
-| `FETCH_INST`       | `C_CI`, `C_RO`, `C_II`  |
-| `FETCH_PC`         | `C_CO`, `C_MI`          |
-| `HALT`             | `C_HALT`                |
-| `JUMP`             | `C_CI`, `C_RO`, `C_J`   |
-| `LOAD_ADDR`        | `C_CI`, `C_RO`, `C_MI`  |
-| `OUT_A`            | `C_AO`, `C_OI`          |
-| `RAM_A`            | `C_RO`, `C_AI`          |
-| `RAM_B`            | `C_RO`, `C_BI`          |
-| `STORE_A`          | `C_AO`, `C_RI`          |
+| State         | II | CI | CO | AI | AO | BI | EO | MI | RO | RI | HALT | J | OI |
+|---------------|----|----|----|----|----|----|----|----|----|----|------|---|----|
+| `ALU_OP`      |    |    |    | X  |    |    | X  |    |    |    |      |   |    |
+| `FETCH_INST`  | X  | X  |    |    |    |    |    |    | X  |    |      |   |    |
+| `FETCH_PC`    |    |    | X  |    |    |    |    | X  |    |    |      |   |    |
+| `HALT`        |    |    |    |    |    |    |    |    |    |    | X    |   |    |
+| `JUMP`        |    | X  |    |    |    |    |    |    | 1  |    |      | 1 |    |
+| `LOAD_ADDR`   |    | X  |    |    |    |    |    | X  | X  |    |      |   |    |
+| `OUT_A`       |    |    |    |    | X  |    |    |    |    |    |      |   | X  |
+| `RAM_A`       |    |    |    | X  |    |    |    |    | X  |    |      |   |    |
+| `RAM_B`       |    |    |    |    |    | X  |    |    | X  |    |      |   |    |
+| `STORE_A`     |    |    |    |    | X  |    |    |    |    | X  |      |   |    |
+
+Special cases:
+
+1. Enabled when we have to jump
 
 
 Graph of the FSM:

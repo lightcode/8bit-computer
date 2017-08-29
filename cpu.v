@@ -149,6 +149,9 @@ module cpu(
   wire jump_allowed;
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
 
+  assign c_next = state == `STATE_NEXT | reset;
+  assign c_sub  = state == `STATE_ALU_OP & opcode == `OP_SUB;
+
   assign c_ai   = state == `STATE_RAM_A | state == `STATE_ALU_OP;
   assign c_ao   = state == `STATE_OUT_A | state == `STATE_STORE_A;
   assign c_bi   = state == `STATE_RAM_B;
@@ -159,11 +162,9 @@ module cpu(
   assign c_ii   = state == `STATE_FETCH_INST;
   assign c_j    = state == `STATE_JUMP & jump_allowed;
   assign c_mi   = state == `STATE_FETCH_PC | state == `STATE_LOAD_ADDR;
-  assign c_next = state == `STATE_NEXT | reset;
   assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST | (state == `STATE_JUMP & jump_allowed) |
                   state == `STATE_RAM_A | state == `STATE_RAM_B | state == `STATE_LOAD_ADDR;
-  assign c_sub  = state == `STATE_ALU_OP & opcode == `OP_SUB;
   assign c_ri   = state == `STATE_STORE_A;
 
   wire [3:0] cycle;
