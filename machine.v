@@ -54,6 +54,8 @@ module machine;
 
   initial begin
     $readmemh("memory.list", m_ram.mem);
+    $dumpfile("cpu.vcd");
+    $dumpvars(0, m_cpu);
   end
 
   initial begin
