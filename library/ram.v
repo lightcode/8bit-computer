@@ -9,10 +9,6 @@ module ram(
   reg [7:0] mem [0:255];
   reg [7:0] buffer;
 
-  initial begin
-    $readmemh("memory.list", mem);
-  end
-
   always @(posedge clk) begin
     if (we) begin
       mem[addr] <= data;

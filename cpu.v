@@ -185,15 +185,4 @@ module cpu(
     $display("Output: %d (%h)", rega_out, rega_out);
   end
 
-
-  // ==========================
-  // Monitoring
-  // ==========================
-
-  initial begin
-    # 30 $monitor(
-      "[%08d] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, eq_zero: %b, c_sub: %b",
-      $time, bus, pc_out, cycle, state, opcode, rega_out, regb_out, alu_out, addr_bus, eq_zero, c_sub);
-  end
-
 endmodule
