@@ -20,3 +20,6 @@
 `define STATE_STORE_A          4'h8
 `define STATE_LOAD_ADDR        4'h9
 `define STATE_ALU_OP           4'ha
+
+`define ALU_ADD 4'h0
+`define ALU_SUB 4'h1

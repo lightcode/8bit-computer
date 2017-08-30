@@ -1,6 +1,6 @@
 module alu(
   input wire cin,
-  input wire sub,
+  input wire [3:0] mode,
   output wire cout,
   input wire [N-1:0] in_a,
   input wire [N-1:0] in_b,
@@ -8,9 +8,13 @@ module alu(
   output wire eq_zero
 );
 
+  `include "rtl/parameters.v"
+
   parameter N = 8;
 
-  assign {cout, out} = sub ? in_a - in_b : in_a + in_b + cin;
+  assign {cout, out} = (mode == `ALU_SUB) ? in_a - in_b :
+                       (mode == `ALU_ADD) ? in_a + in_b + cin :
+                       'bx;
   assign eq_zero = (in_a == 0) ? 1 : 0;
 
 endmodule

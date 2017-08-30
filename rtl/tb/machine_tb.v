@@ -38,7 +38,7 @@ module machine_tb;
     # 10 reset = 0;
     # 10 enable_clk = 1;
     $monitor(
-      "[%08d] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, eq_zero: %b, c_sub: %b",
+      "[%08d] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, eq_zero: %b, alu_mode: %b",
       $time,
       m_machine.m_cpu.bus,
       m_machine.m_cpu.pc_out,
@@ -50,7 +50,7 @@ module machine_tb;
       m_machine.m_cpu.alu_out,
       m_machine.m_cpu.addr_bus,
       m_machine.m_cpu.eq_zero,
-      m_machine.m_cpu.c_sub
+      m_machine.m_cpu.alu_mode
     );
     # 20000 $display("Kill to prevent looping."); $stop;
   end

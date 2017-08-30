@@ -117,7 +117,7 @@ module cpu(
 
   reg cin = 0;
   wire c_eo;
-  wire c_sub;
+  wire alu_mode;
   wire eq_zero; // high when reg A is equal to 0
   wire [7:0] alu_out;
   alu m_alu (
@@ -126,7 +126,7 @@ module cpu(
     .in_a(rega_out),
     .in_b(regb_out),
     .out(alu_out),
-    .sub(c_sub),
+    .mode(alu_mode),
     .eq_zero(eq_zero)
   );
   tristate_buffer m_alu_buf (
@@ -150,7 +150,9 @@ module cpu(
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
 
   assign c_next = state == `STATE_NEXT | reset;
-  assign c_sub  = state == `STATE_ALU_OP & opcode == `OP_SUB;
+  assign alu_mode = (opcode == `OP_SUB) ? `ALU_SUB :
+                    (opcode == `OP_ADD) ? `ALU_ADD :
+                    'bx;
 
   assign c_ai   = state == `STATE_RAM_A | state == `STATE_ALU_OP;
   assign c_ao   = state == `STATE_OUT_A | state == `STATE_STORE_A;
