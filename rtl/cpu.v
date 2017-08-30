@@ -8,7 +8,7 @@ module cpu(
   inout wire [7:0] bus
 );
 
-  `include "parameters.v"
+  `include "rtl/parameters.v"
 
   // ==========================
   // Clocks

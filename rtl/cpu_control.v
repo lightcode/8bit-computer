@@ -6,7 +6,7 @@ module cpu_control(
   output reg [3:0] cycle
 );
 
-  `include "parameters.v"
+  `include "rtl/parameters.v"
 
   initial
     cycle = 0;
