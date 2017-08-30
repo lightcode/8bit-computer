@@ -150,9 +150,7 @@ module cpu(
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
 
   assign c_next = state == `STATE_NEXT | reset;
-  assign alu_mode = (opcode == `OP_SUB) ? `ALU_SUB :
-                    (opcode == `OP_ADD) ? `ALU_ADD :
-                    'bx;
+  assign alu_mode = (state == `STATE_ALU_OP) ? opcode[3:0] : 'bx;
 
   assign c_ai   = state == `STATE_RAM_A | state == `STATE_ALU_OP;
   assign c_ao   = state == `STATE_OUT_A | state == `STATE_STORE_A;

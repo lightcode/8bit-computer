@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
-[*] Wed Aug 30 06:16:21 2017
+[*] Thu Aug 31 05:57:26 2017
 [*]
 [dumpfile] "machine.vcd"
-[dumpfile_mtime] "Wed Aug 30 05:25:30 2017"
-[dumpfile_size] 52264
-[savefile] "config.gtkw"
-[timestart] 0
+[dumpfile_mtime] "Wed Aug 30 17:33:50 2017"
+[dumpfile_size] 53507
+[savefile] "gtkwave/config.gtkw"
+[timestart] 1102
 [size] 1916 1042
 [pos] -960 39
-*-3.000000 30 170 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-3.000000 1120 170 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] machine_tb.
 [treeopen] machine_tb.m_machine.
 [sst_width] 223
@@ -30,12 +30,9 @@ machine_tb.m_machine.m_cpu.internal_clk
 @28
 machine_tb.m_machine.m_cpu.reset
 @2022
-^2 gtkwave/states.txt
+^1 gtkwave/states.txt
 machine_tb.m_machine.m_cpu.state[3:0]
-@28
-machine_tb.m_machine.m_cpu.cycle_clk
-@2022
-^1 gtkwave/opcode.txt
+^2 gtkwave/opcode.txt
 machine_tb.m_machine.m_cpu.opcode[7:0]
 @1000200
 -Control

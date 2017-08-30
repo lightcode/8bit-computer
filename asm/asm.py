@@ -4,7 +4,18 @@ import sys
 
 progf = sys.argv[1]
 
-inst = ["nop", "lda", "add", "out", "jmp", "hlt", "sub", "jez", "sta", "jnz"]
+inst = {
+    "nop": 0x00,
+    "lda": 0x01,
+    "out": 0x03,
+    "jmp": 0x04,
+    "hlt": 0x05,
+    "jez": 0x07,
+    "sta": 0x08,
+    "jnz": 0x09,
+    "add": 0xa0,
+    "sub": 0xa1,
+}
 
 PROGRAM, DATA = 0, 1
 MEM_SIZE = 256
@@ -35,7 +46,7 @@ with open(progf) as f:
                 if kw[0][-1] == ":":
                     labels[kw[0].rstrip(":")] = cnt
                 else:
-                    mem[cnt] = inst.index(kw[0])
+                    mem[cnt] = inst[kw[0]]
                     cnt += 1
                     for a in kw[1:]:
                         mem[cnt] = a

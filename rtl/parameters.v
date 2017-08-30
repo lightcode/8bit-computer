@@ -1,13 +1,13 @@
 `define OP_NOP 8'h00
 `define OP_LDA 8'h01
-`define OP_ADD 8'h02
 `define OP_OUT 8'h03
 `define OP_JMP 8'h04
 `define OP_HLT 8'h05
-`define OP_SUB 8'h06
 `define OP_JEZ 8'h07
 `define OP_STA 8'h08
 `define OP_JNZ 8'h09
+`define OP_ADD 8'ha0
+`define OP_SUB 8'ha1
 
 `define STATE_NEXT             4'h0
 `define STATE_FETCH_PC         4'h1
