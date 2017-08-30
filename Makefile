@@ -4,7 +4,8 @@ LIBRARIES   = $(wildcard rtl/library/*.v)
 computer:
 	iverilog -o computer \
 		$(COMPUTER) \
-		$(LIBRARIES)
+		$(LIBRARIES) \
+		rtl/tb/machine_tb.v
 
 run_computer: computer
 	vvp -n computer
@@ -13,4 +14,4 @@ clean_computer:
 	rm -rf computer
 
 view:
-	gtkwave cpu.vcd config.gtkw
+	gtkwave machine.vcd gtkwave/config.gtkw
