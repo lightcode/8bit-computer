@@ -6,8 +6,8 @@
 `define OP_JEZ 8'h07
 `define OP_STA 8'h08
 `define OP_JNZ 8'h09
-`define OP_ADD 8'ha0
-`define OP_SUB 8'ha1
+`define OP_ADD 8'b01_000_000
+`define OP_SUB 8'b01_001_000
 
 `define STATE_NEXT             4'h0
 `define STATE_FETCH_PC         4'h1
@@ -21,5 +21,5 @@
 `define STATE_LOAD_ADDR        4'h9
 `define STATE_ALU_OP           4'ha
 
-`define ALU_ADD 4'h0
-`define ALU_SUB 4'h1
+`define ALU_ADD 3'b000
+`define ALU_SUB 3'b001

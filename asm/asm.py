@@ -13,8 +13,8 @@ inst = {
     "jez": 0x07,
     "sta": 0x08,
     "jnz": 0x09,
-    "add": 0xa0,
-    "sub": 0xa1,
+    "add": 0b01000000,
+    "sub": 0b01001000,
 }
 
 PROGRAM, DATA = 0, 1

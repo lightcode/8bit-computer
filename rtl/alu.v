@@ -1,6 +1,6 @@
 module alu(
   input wire cin,
-  input wire [3:0] mode,
+  input wire [2:0] mode,
   output wire cout,
   input wire [N-1:0] in_a,
   input wire [N-1:0] in_b,

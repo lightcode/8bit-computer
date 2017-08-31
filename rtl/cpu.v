@@ -107,9 +107,9 @@ module cpu(
 
   reg cin = 0;
   wire c_eo;
-  wire [3:0] alu_mode;
   wire eq_zero; // high when reg A is equal to 0
   wire [7:0] alu_out;
+  wire [2:0] alu_mode;
   alu m_alu (
     .cin(cin),
     .cout(),
@@ -136,11 +136,17 @@ module cpu(
 
   assign opcode = regi_out;
 
+  wire [2:0] operand1;
+  wire [2:0] operand2;
+  assign operand1 = opcode[5:3];
+  assign operand2 = opcode[2:0];
+
   wire jump_allowed;
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
 
   assign c_next = state == `STATE_NEXT | reset;
-  assign alu_mode = (state == `STATE_ALU_OP) ? opcode[3:0] : 'bx;
+
+  assign alu_mode = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
   assign sel = (state == `STATE_ALU_OP | state == `STATE_RAM_A | state == `STATE_OUT_A | state == `STATE_STORE_A) ? 0 :
                (state == `STATE_RAM_B) ? 1 :

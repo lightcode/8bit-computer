@@ -2,7 +2,7 @@ COMPUTER    = $(wildcard rtl/*.v)
 LIBRARIES   = $(wildcard rtl/library/*.v)
 
 computer:
-	iverilog -o computer \
+	iverilog -o computer -Wall \
 		$(COMPUTER) \
 		$(LIBRARIES) \
 		rtl/tb/machine_tb.v
