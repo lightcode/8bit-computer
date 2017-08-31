@@ -150,8 +150,9 @@ module cpu(
 
   assign sel = (state == `STATE_ALU_OP | state == `STATE_RAM_A | state == `STATE_OUT_A | state == `STATE_STORE_A) ? 0 :
                (state == `STATE_RAM_B) ? 1 :
+               (state == `STATE_LDI) ? operand2 :
                'bx;
-  assign rfi = state == `STATE_RAM_A | state == `STATE_ALU_OP | state == `STATE_RAM_B;
+  assign rfi = state == `STATE_RAM_A | state == `STATE_ALU_OP | state == `STATE_RAM_B | state == `STATE_LDI;
   assign rfo = state == `STATE_OUT_A | state == `STATE_STORE_A;
 
   assign c_ci   = state == `STATE_FETCH_INST | state == `STATE_JUMP | state == `STATE_LOAD_ADDR;
@@ -163,7 +164,7 @@ module cpu(
   assign c_mi   = state == `STATE_FETCH_PC | state == `STATE_LOAD_ADDR;
   assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST | (state == `STATE_JUMP & jump_allowed) |
-                  state == `STATE_RAM_A | state == `STATE_RAM_B | state == `STATE_LOAD_ADDR;
+                  state == `STATE_RAM_A | state == `STATE_RAM_B | state == `STATE_LOAD_ADDR | state == `STATE_LDI;
   assign c_ri   = state == `STATE_STORE_A;
 
   wire [3:0] cycle;

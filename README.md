@@ -34,6 +34,7 @@ JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 HLT : FETCH_PC, FETCH_INST, HALT
 STA : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, STORE_A
 JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
+LDI : FETCH_PC, FETCH_INST, FETCH_PC, LDI
 ```
 
 List of all states:
@@ -50,6 +51,7 @@ List of all states:
 | `RAM_A`       |    |    |    | A   |     |    |    | X  |    |      |   |    |
 | `RAM_B`       |    |    |    | B   |     |    |    | X  |    |      |   |    |
 | `STORE_A`     |    |    |    |     | A   |    |    |    | X  |      |   |    |
+| `LDI`         |    |    |    | op2 |     |    |    | X  |    |      |   |    |
 
 Special cases:
 
@@ -64,13 +66,13 @@ Graph of the FSM:
        |------------+-----------------------|
      (HLT)        (OUT)                   (else)
 [2]  HALT         OUT_A                  FETCH_PC
-       |            |            |----------+--------------|
-       |            |       (JNZ/JMP/JEZ)                (else)
-[3]   NEXT         NEXT         JUMP                   LOAD_ADDR
-                                 |                         |
-                                 |               |---------|-------------|
-                                 |            (STA)      (LDA)       (ADD/SUB)
-[4]                             NEXT         STORE_A     RAM_A         RAM_B
+       |            |            |----------+--------------+--------------------------|
+       |            |       (JNZ/JMP/JEZ)                (else)                     (LDI)
+[3]   NEXT         NEXT         JUMP                   LOAD_ADDR                     LDI
+                                 |                         |                          |
+                                 |               |---------|-------------|            |
+                                 |            (STA)      (LDA)       (ADD/SUB)        |
+[4]                             NEXT         STORE_A     RAM_A         RAM_B        NEXT
                                                  |          |            |
                                                  |          |            |
 [5]                                            NEXT        NEXT       ALU_OP

@@ -1,11 +1,12 @@
-`define OP_NOP 8'h00
-`define OP_LDA 8'h01
-`define OP_OUT 8'h03
-`define OP_JMP 8'h04
-`define OP_HLT 8'h05
-`define OP_JEZ 8'h07
-`define OP_STA 8'h08
-`define OP_JNZ 8'h09
+`define OP_NOP 8'b00_000_000
+`define OP_LDA 8'b00_000_001
+`define OP_OUT 8'b00_000_011
+`define OP_JMP 8'b00_000_100
+`define OP_HLT 8'b00_000_101
+`define OP_JEZ 8'b00_000_111
+`define OP_STA 8'b00_001_000
+`define OP_JNZ 8'b00_001_001
+`define OP_LDI 8'b00_010_???
 `define OP_ADD 8'b01_000_000
 `define OP_SUB 8'b01_001_000
 
@@ -20,6 +21,7 @@
 `define STATE_STORE_A          4'h8
 `define STATE_LOAD_ADDR        4'h9
 `define STATE_ALU_OP           4'ha
+`define STATE_LDI              4'hb
 
 `define ALU_ADD 3'b000
 `define ALU_SUB 3'b001

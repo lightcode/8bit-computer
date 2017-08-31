@@ -15,6 +15,12 @@ inst = {
     "jnz": 0x09,
     "add": 0b01000000,
     "sub": 0b01001000,
+    "ldi": 0b00010000,
+}
+
+reg = {
+    "A": 0b000,
+    "B": 0b001,
 }
 
 PROGRAM, DATA = 0, 1
@@ -46,9 +52,17 @@ with open(progf) as f:
                 if kw[0][-1] == ":":
                     labels[kw[0].rstrip(":")] = cnt
                 else:
-                    mem[cnt] = inst[kw[0]]
-                    cnt += 1
-                    for a in kw[1:]:
+                    current_inst = kw[0]
+
+                    if current_inst == "ldi":
+                        r = reg[kw[1]]
+                        kw[0] = (inst[kw[0]] & 0b11111000) | r
+                        del kw[1]
+                        kw[1] = int(kw[1])
+                    else:
+                        kw[0] = inst[kw[0]]
+
+                    for a in kw:
                         mem[cnt] = a
                         cnt += 1
 

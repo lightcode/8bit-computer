@@ -8,24 +8,32 @@ module cpu_control(
 
   `include "rtl/parameters.v"
 
+  reg [7:0] opclass;
+
   initial
     cycle = 0;
 
   always @ (posedge clk) begin
+    casez (opcode)
+      `OP_LDI: opclass = 8'b00_010_000;
+      default: opclass = opcode;
+    endcase
+
     case (cycle)
       0: state = `STATE_FETCH_PC;
       1: state = `STATE_FETCH_INST;
-      2: state = (opcode == `OP_HLT) ? `STATE_HALT :
-                 (opcode == `OP_OUT) ? `STATE_OUT_A :
+      2: state = (opclass == `OP_HLT) ? `STATE_HALT :
+                 (opclass == `OP_OUT) ? `STATE_OUT_A :
                  `STATE_FETCH_PC;
-      3: state = (opcode == `OP_HLT || opcode == `OP_OUT) ? `STATE_NEXT :
-                 (opcode == `OP_JMP || opcode == `OP_JEZ || opcode == `OP_JNZ) ? `STATE_JUMP :
+      3: state = (opclass == `OP_HLT || opclass == `OP_OUT) ? `STATE_NEXT :
+                 (opclass == `OP_JMP || opclass == `OP_JEZ || opclass == `OP_JNZ) ? `STATE_JUMP :
+                 (opclass == 8'b00_010_000) ?  `STATE_LDI :
                  `STATE_LOAD_ADDR;
-      4: state = (opcode == `OP_LDA) ? `STATE_RAM_A :
-                 (opcode == `OP_STA) ? `STATE_STORE_A :
-                 (opcode == `OP_ADD || opcode == `OP_SUB) ?`STATE_RAM_B :
+      4: state = (opclass == `OP_LDA) ? `STATE_RAM_A :
+                 (opclass == `OP_STA) ? `STATE_STORE_A :
+                 (opclass == `OP_ADD || opclass == `OP_SUB) ?`STATE_RAM_B :
                  `STATE_NEXT;
-      5: state = (opcode == `OP_ADD || opcode == `OP_SUB) ? `STATE_ALU_OP :
+      5: state = (opclass == `OP_ADD || opclass == `OP_SUB) ? `STATE_ALU_OP :
                  `STATE_NEXT;
       6: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
