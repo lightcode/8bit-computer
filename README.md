@@ -38,18 +38,18 @@ JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 
 List of all states:
 
-| State         | II | CI | CO | AI | AO | BI | EO | MI | RO | RI | HALT | J | OI |
-|---------------|----|----|----|----|----|----|----|----|----|----|------|---|----|
-| `ALU_OP`      |    |    |    | X  |    |    | X  |    |    |    |      |   |    |
-| `FETCH_INST`  | X  | X  |    |    |    |    |    |    | X  |    |      |   |    |
-| `FETCH_PC`    |    |    | X  |    |    |    |    | X  |    |    |      |   |    |
-| `HALT`        |    |    |    |    |    |    |    |    |    |    | X    |   |    |
-| `JUMP`        |    | X  |    |    |    |    |    |    | 1  |    |      | 1 |    |
-| `LOAD_ADDR`   |    | X  |    |    |    |    |    | X  | X  |    |      |   |    |
-| `OUT_A`       |    |    |    |    | X  |    |    |    |    |    |      |   | X  |
-| `RAM_A`       |    |    |    | X  |    |    |    |    | X  |    |      |   |    |
-| `RAM_B`       |    |    |    |    |    | X  |    |    | X  |    |      |   |    |
-| `STORE_A`     |    |    |    |    | X  |    |    |    |    | X  |      |   |    |
+| State         | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | OI |
+|---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|
+| `ALU_OP`      |    |    |    | A   |     | X  |    |    |    |      |   |    |
+| `FETCH_INST`  | X  | X  |    |     |     |    |    | X  |    |      |   |    |
+| `FETCH_PC`    |    |    | X  |     |     |    | X  |    |    |      |   |    |
+| `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |
+| `JUMP`        |    | X  |    |     |     |    |    | 1  |    |      | 1 |    |
+| `LOAD_ADDR`   |    | X  |    |     |     |    | X  | X  |    |      |   |    |
+| `OUT_A`       |    |    |    |     | A   |    |    |    |    |      |   | X  |
+| `RAM_A`       |    |    |    | A   |     |    |    | X  |    |      |   |    |
+| `RAM_B`       |    |    |    | B   |     |    |    | X  |    |      |   |    |
+| `STORE_A`     |    |    |    |     | A   |    |    |    | X  |      |   |    |
 
 Special cases:
 

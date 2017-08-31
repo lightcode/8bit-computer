@@ -39,32 +39,22 @@ module cpu(
   // Registers
   // ==========================
 
-  // A register
+  // General Purpose Registers
+  // 0 is for accumulator
+  wire [2:0] sel;
+  wire rfi;
+  wire rfo;
   wire [7:0] rega_out;
-  wire c_ao;
-  wire c_ai;
-  register m_rega (
-    .in(bus),
-    .clk(internal_clk),
-    .enable(c_ai),
-    .reset(reset),
-    .out(rega_out)
-  );
-  tristate_buffer m_rega_buf (
-    .in(rega_out),
-    .enable(c_ao),
-    .out(bus)
-  );
-
-  // B register
   wire [7:0] regb_out;
-  wire c_bi;
-  register m_regb (
-    .in(bus),
+  cpu_registers m_registers (
     .clk(internal_clk),
-    .enable(c_bi),
-    .reset(reset),
-    .out(regb_out)
+    .data_in(bus),
+    .sel(sel),
+    .enable_write(rfi),
+    .output_enable(rfo),
+    .data_out(bus),
+    .rega(rega_out),
+    .regb(regb_out)
   );
 
   // Instruction Register
@@ -117,7 +107,7 @@ module cpu(
 
   reg cin = 0;
   wire c_eo;
-  wire alu_mode;
+  wire [3:0] alu_mode;
   wire eq_zero; // high when reg A is equal to 0
   wire [7:0] alu_out;
   alu m_alu (
@@ -152,9 +142,12 @@ module cpu(
   assign c_next = state == `STATE_NEXT | reset;
   assign alu_mode = (state == `STATE_ALU_OP) ? opcode[3:0] : 'bx;
 
-  assign c_ai   = state == `STATE_RAM_A | state == `STATE_ALU_OP;
-  assign c_ao   = state == `STATE_OUT_A | state == `STATE_STORE_A;
-  assign c_bi   = state == `STATE_RAM_B;
+  assign sel = (state == `STATE_ALU_OP | state == `STATE_RAM_A | state == `STATE_OUT_A | state == `STATE_STORE_A) ? 0 :
+               (state == `STATE_RAM_B) ? 1 :
+               'bx;
+  assign rfi = state == `STATE_RAM_A | state == `STATE_ALU_OP | state == `STATE_RAM_B;
+  assign rfo = state == `STATE_OUT_A | state == `STATE_STORE_A;
+
   assign c_ci   = state == `STATE_FETCH_INST | state == `STATE_JUMP | state == `STATE_LOAD_ADDR;
   assign c_co   = state == `STATE_FETCH_PC;
   assign c_eo   = state == `STATE_ALU_OP;

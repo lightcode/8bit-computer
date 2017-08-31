@@ -1,17 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
-[*] Thu Aug 31 05:57:26 2017
+[*] Thu Aug 31 12:32:00 2017
 [*]
-[dumpfile] "machine.vcd"
-[dumpfile_mtime] "Wed Aug 30 17:33:50 2017"
-[dumpfile_size] 53507
-[savefile] "gtkwave/config.gtkw"
-[timestart] 1102
+[dumpfile_size] 52551
+[timestart] 0
 [size] 1916 1042
 [pos] -960 39
-*-3.000000 1120 170 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-6.000000 40 170 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] machine_tb.
 [treeopen] machine_tb.m_machine.
+[treeopen] machine_tb.m_machine.m_cpu.
 [sst_width] 223
 [signals_width] 262
 [sst_expanded] 1
@@ -27,12 +25,14 @@ machine_tb.m_machine.m_cpu.internal_clk
 -Clock
 @800200
 -Control
+@22
+machine_tb.m_machine.m_cpu.pc_out[7:0]
 @28
 machine_tb.m_machine.m_cpu.reset
 @2022
-^1 gtkwave/states.txt
+^1 /home/mgaigniere/Perso/8bit-computer/gtkwave/states.txt
 machine_tb.m_machine.m_cpu.state[3:0]
-^2 gtkwave/opcode.txt
+^2 /home/mgaigniere/Perso/8bit-computer/gtkwave/opcode.txt
 machine_tb.m_machine.m_cpu.opcode[7:0]
 @1000200
 -Control
@@ -46,9 +46,21 @@ machine_tb.m_machine.m_cpu.bus[7:0]
 @800200
 -Registers
 @22
-machine_tb.m_machine.m_cpu.rega_out[7:0]
-machine_tb.m_machine.m_cpu.regb_out[7:0]
+machine_tb.m_machine.m_cpu.m_registers.rega[7:0]
+machine_tb.m_machine.m_cpu.m_registers.regb[7:0]
+@28
+machine_tb.m_machine.m_cpu.rfi
+machine_tb.m_machine.m_cpu.rfo
+machine_tb.m_machine.m_cpu.sel[2:0]
 @1000200
 -Registers
+@800200
+-ALU
+@28
+machine_tb.m_machine.m_cpu.alu_mode
+@22
+machine_tb.m_machine.m_cpu.alu_out[7:0]
+@1000200
+-ALU
 [pattern_trace] 1
 [pattern_trace] 0
