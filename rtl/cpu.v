@@ -16,21 +16,14 @@ module cpu(
 
   reg cycle_clk = 0;
   reg internal_clk = 0;
-  reg [1:0] cnt = 0;
+  reg [2:0] cnt = 'b100;
   always @ (posedge clk) begin
+    {cycle_clk, mem_clk, internal_clk} <= cnt;
+
     case (cnt)
-      0 : begin
-        {cycle_clk, mem_clk, internal_clk} <= 'b100;
-        cnt <= 1;
-      end
-      1 : begin
-        {cycle_clk, mem_clk, internal_clk} <= 'b010;
-        cnt <= 2;
-      end
-      2 : begin
-        {cycle_clk, mem_clk, internal_clk} <= 'b001;
-        cnt <= 0;
-      end
+      'b100 : cnt = 'b010;
+      'b010 : cnt = 'b001;
+      'b001 : cnt = 'b100;
     endcase
   end
 
