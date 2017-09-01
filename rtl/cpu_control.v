@@ -16,6 +16,7 @@ module cpu_control(
   always @ (posedge clk) begin
     casez (opcode)
       `OP_LDI: opclass = 8'b00_010_000;
+      `OP_MOV: opclass = 8'b10_000_000;
       default: opclass = opcode;
     endcase
 
@@ -24,14 +25,17 @@ module cpu_control(
       1: state = `STATE_FETCH_INST;
       2: state = (opclass == `OP_HLT) ? `STATE_HALT :
                  (opclass == `OP_OUT) ? `STATE_OUT_A :
+                 (opclass == 8'b10_000_000) ?  `STATE_MOV_FETCH :
                  `STATE_FETCH_PC;
       3: state = (opclass == `OP_HLT || opclass == `OP_OUT) ? `STATE_NEXT :
                  (opclass == `OP_JMP || opclass == `OP_JEZ || opclass == `OP_JNZ) ? `STATE_JUMP :
                  (opclass == 8'b00_010_000) ?  `STATE_LDI :
+                 (opclass == 8'b10_000_000) ?  `STATE_MOV_LOAD :
                  `STATE_LOAD_ADDR;
       4: state = (opclass == `OP_LDA) ? `STATE_RAM_A :
                  (opclass == `OP_STA) ? `STATE_STORE_A :
                  (opclass == `OP_ADD || opclass == `OP_SUB) ?`STATE_RAM_B :
+                 (opclass == 8'b10_000_000) ?  `STATE_MOV_STORE :
                  `STATE_NEXT;
       5: state = (opclass == `OP_ADD || opclass == `OP_SUB) ? `STATE_ALU_OP :
                  `STATE_NEXT;

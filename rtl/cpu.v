@@ -41,7 +41,8 @@ module cpu(
 
   // General Purpose Registers
   // 0 is for accumulator
-  wire [2:0] sel;
+  wire [2:0] sel_in;
+  wire [2:0] sel_out;
   wire rfi;
   wire rfo;
   wire [7:0] rega_out;
@@ -49,7 +50,8 @@ module cpu(
   cpu_registers m_registers (
     .clk(internal_clk),
     .data_in(bus),
-    .sel(sel),
+    .sel_in(sel_in),
+    .sel_out(sel_out),
     .enable_write(rfi),
     .output_enable(rfo),
     .data_out(bus),
@@ -141,6 +143,9 @@ module cpu(
   assign operand1 = opcode[5:3];
   assign operand2 = opcode[2:0];
 
+  wire mov_memory;
+  assign mov_memory = operand1 == 3'b111 || operand2 == 3'b111;
+
   wire jump_allowed;
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
 
@@ -148,24 +153,30 @@ module cpu(
 
   assign alu_mode = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
-  assign sel = (state == `STATE_ALU_OP | state == `STATE_RAM_A | state == `STATE_OUT_A | state == `STATE_STORE_A) ? 0 :
-               (state == `STATE_RAM_B) ? 1 :
-               (state == `STATE_LDI) ? operand2 :
-               'bx;
-  assign rfi = state == `STATE_RAM_A | state == `STATE_ALU_OP | state == `STATE_RAM_B | state == `STATE_LDI;
-  assign rfo = state == `STATE_OUT_A | state == `STATE_STORE_A;
+  assign sel_in = (state == `STATE_ALU_OP | state == `STATE_RAM_A) ? 0 :
+                  (state == `STATE_RAM_B) ? 1 :
+                  (state == `STATE_LDI) ? operand2 :
+                  (state == `STATE_MOV_STORE) ? operand1 :
+                  'bx;
 
-  assign c_ci   = state == `STATE_FETCH_INST | state == `STATE_JUMP | state == `STATE_LOAD_ADDR;
-  assign c_co   = state == `STATE_FETCH_PC;
+  assign sel_out = (state == `STATE_OUT_A | state == `STATE_STORE_A) ? 0 :
+                   (state == `STATE_MOV_STORE) ? operand2 :
+                   'bx;
+
+  assign rfi = state == `STATE_RAM_A | state == `STATE_ALU_OP | state == `STATE_RAM_B | state == `STATE_LDI | (state == `STATE_MOV_STORE && operand1 != 3'b111);
+  assign rfo = state == `STATE_OUT_A | state == `STATE_STORE_A | (state == `STATE_MOV_STORE && operand2 != 3'b111);
+
+  assign c_ci   = state == `STATE_FETCH_INST | state == `STATE_JUMP | state == `STATE_LOAD_ADDR | state == `STATE_LDI | ((state == `STATE_MOV_LOAD) & mov_memory);
+  assign c_co   = state == `STATE_FETCH_PC  | (state == `STATE_MOV_FETCH && mov_memory);
   assign c_eo   = state == `STATE_ALU_OP;
   assign c_halt = state == `STATE_HALT;
   assign c_ii   = state == `STATE_FETCH_INST;
   assign c_j    = state == `STATE_JUMP & jump_allowed;
-  assign c_mi   = state == `STATE_FETCH_PC | state == `STATE_LOAD_ADDR;
+  assign c_mi   = state == `STATE_FETCH_PC | state == `STATE_LOAD_ADDR | ((state == `STATE_MOV_FETCH | state == `STATE_MOV_LOAD) & mov_memory);
   assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST | (state == `STATE_JUMP & jump_allowed) |
-                  state == `STATE_RAM_A | state == `STATE_RAM_B | state == `STATE_LOAD_ADDR | state == `STATE_LDI;
-  assign c_ri   = state == `STATE_STORE_A;
+                  state == `STATE_RAM_A | state == `STATE_RAM_B | state == `STATE_LOAD_ADDR | state == `STATE_LDI | (state == `STATE_MOV_LOAD & mov_memory) | (state == `STATE_MOV_STORE & operand2 == 3'b111);
+  assign c_ri   = state == `STATE_STORE_A | (state == `STATE_MOV_STORE && operand1 == 3'b111);
 
   wire [3:0] cycle;
   cpu_control m_ctrl (

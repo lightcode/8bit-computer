@@ -16,11 +16,18 @@ inst = {
     "add": 0b01000000,
     "sub": 0b01001000,
     "ldi": 0b00010000,
+    "mov": 0b10000000,
 }
 
 reg = {
     "A": 0b000,
     "B": 0b001,
+    "C": 0b010,
+    "D": 0b011,
+    "E": 0b100,
+    "F": 0b101,
+    "G": 0b110,
+    "M": 0b111,
 }
 
 PROGRAM, DATA = 0, 1
@@ -59,6 +66,13 @@ with open(progf) as f:
                         kw[0] = (inst[kw[0]] & 0b11111000) | r
                         del kw[1]
                         kw[1] = int(kw[1])
+                    elif current_inst == "mov":
+                        op1 = reg[kw[1]]
+                        op2 = reg[kw[2]]
+                        kw[0] = (inst[kw[0]] & 0b11111000) | op2
+                        kw[0] = (kw[0] & 0b11000111) | (op1 << 3)
+                        del kw[2]
+                        del kw[1]
                     else:
                         kw[0] = inst[kw[0]]
 

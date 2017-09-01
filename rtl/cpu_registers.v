@@ -1,7 +1,8 @@
 module cpu_registers(
   input wire clk,
   input wire [7:0] data_in,
-  input wire [2:0] sel,
+  input wire [2:0] sel_in,
+  input wire [2:0] sel_out,
   input wire enable_write,
   input wire output_enable,
   output wire [7:0] data_out,
@@ -13,10 +14,10 @@ module cpu_registers(
 
   always @ (posedge clk) begin
     if (enable_write)
-      registers[sel] = data_in;
+      registers[sel_in] = data_in;
   end
 
-  assign data_out = (output_enable) ? registers[sel] : 'bz;
+  assign data_out = (output_enable) ? registers[sel_out] : 'bz;
   assign rega = registers[0];
   assign regb = registers[1];
 

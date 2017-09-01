@@ -35,6 +35,7 @@ HLT : FETCH_PC, FETCH_INST, HALT
 STA : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, STORE_A
 JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 LDI : FETCH_PC, FETCH_INST, FETCH_PC, LDI
+MOV : FETCH_PC, FETCH_INST, MOV_FETCH, MOV_LOAD, MOV_STORE
 ```
 
 List of all states:
@@ -51,7 +52,10 @@ List of all states:
 | `RAM_A`       |    |    |    | A   |     |    |    | X  |    |      |   |    |
 | `RAM_B`       |    |    |    | B   |     |    |    | X  |    |      |   |    |
 | `STORE_A`     |    |    |    |     | A   |    |    |    | X  |      |   |    |
-| `LDI`         |    |    |    | op2 |     |    |    | X  |    |      |   |    |
+| `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |
+| `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |
+| `MOV_LOAD`    |    | X  |    | *   | *   |    | *  | *  |    |      |   |    |
+| `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |
 
 Special cases:
 
@@ -63,21 +67,21 @@ Graph of the FSM:
 ```
 [0]             FETCH_PC
 [1]            FETCH_INST
-       |------------+-----------------------|
-     (HLT)        (OUT)                   (else)
-[2]  HALT         OUT_A                  FETCH_PC
-       |            |            |----------+--------------+--------------------------|
-       |            |       (JNZ/JMP/JEZ)                (else)                     (LDI)
-[3]   NEXT         NEXT         JUMP                   LOAD_ADDR                     LDI
-                                 |                         |                          |
-                                 |               |---------|-------------|            |
-                                 |            (STA)      (LDA)       (ADD/SUB)        |
-[4]                             NEXT         STORE_A     RAM_A         RAM_B        NEXT
-                                                 |          |            |
-                                                 |          |            |
-[5]                                            NEXT        NEXT       ALU_OP
-                                                                         |
-[6]                                                                    NEXT
+       |------------+--------------+--------------------------|
+     (HLT)        (OUT)          (MOV)                      (else)
+[2]  HALT         OUT_A         MOV_FETCH                  FETCH_PC
+       |            |              |               |----------+--------------+--------------------------|
+       |            |              |          (JNZ/JMP/JEZ)                (else)                     (LDI)
+[3]   NEXT         NEXT         MOV_LOAD          JUMP                   LOAD_ADDR                     LDI
+                                   |               |                         |                          |
+                                   |               |               |---------|-------------|            |
+                                   |               |            (STA)      (LDA)       (ADD/SUB)        |
+[4]                             MOV_STORE         NEXT         STORE_A     RAM_A         RAM_B        NEXT
+                                   |                               |          |            |
+                                   |                               |          |            |
+[5]                              NEXT                            NEXT        NEXT       ALU_OP
+                                                                                           |
+[6]                                                                                      NEXT
 ```
 
 ## Clocks

@@ -9,6 +9,7 @@
 `define OP_LDI 8'b00_010_???
 `define OP_ADD 8'b01_000_000
 `define OP_SUB 8'b01_001_000
+`define OP_MOV 8'b10_???_???
 
 `define STATE_NEXT             4'h0
 `define STATE_FETCH_PC         4'h1
@@ -22,6 +23,9 @@
 `define STATE_LOAD_ADDR        4'h9
 `define STATE_ALU_OP           4'ha
 `define STATE_LDI              4'hb
+`define STATE_MOV_STORE        4'hc
+`define STATE_MOV_FETCH        4'hd
+`define STATE_MOV_LOAD         4'he
 
 `define ALU_ADD 3'b000
 `define ALU_SUB 3'b001
