@@ -4,6 +4,7 @@ Simple 8-bit computer in Verilog
 This computer is inspired by [Ben Eater's computer](https://eater.net/8bit/) and by [Edmund Horner's CPU](https://github.com/ejrh/cpu).
 
 
+
 ## How to use it
 
 Build an exemple:
@@ -18,25 +19,37 @@ Run the computer:
 make clean_computer && make run_computer
 ```
 
+## Assembly
 
-## Instructions list
+### Instructions list
 
-* ``lda`` is an alias for ``mov r M D``
-* ``sta`` is an alias for ``mov M r D``
-* ``add D``
-* ``sub D``
-* ``out``
-* ``hlt``
-* ``jmp D``
-* ``jez D``
-* ``jnz D``
-* ``ldi r D``
-* ``mov r M D``
-* ``mov r2 r1``
-* ``mov M r D``
+| Instruction   | Description                                                |
+|---------------|------------------------------------------------------------|
+| ``lda``       | Alias for ``mov A M D``                                    |
+| ``sta``       | Alias for ``mov M A D``                                    |
+| ``add D``     | Add value from address _D_ to A                            |
+| ``sub D``     | Substract value from address _D_ from A                    |
+| ``out``       | Display the content of A                                   |
+| ``hlt``       | Halt the CPU                                               |
+| ``jmp D``     | Jump to _D_                                                |
+| ``jez D``     | Jump to _D_ if register A is equal to zero                 |
+| ``jnz D``     | Jump to _D_ if register A is not equat to zero             |
+| ``ldi r D``   | Load _D_ into _r_ register                                 |
+| ``mov r M D`` | Copy the data at memory address D into register _r_        |
+| ``mov r2 r1`` | Copy register _r1_ into _r2_                               |
+| ``mov M r D`` | Copy the data from register _r_ into memory in address _D_ |
+
+Legend:
+
+* _D_ is a byte of data. It can be a memory address or directly the data depending on the instruction.
+* _r_ is a register.
+* _M_ means "memory", it's used to tell to the ``mov`` instruction the source/destination of the copy.
 
 
-## Instruction decoder and machine state
+
+## Internal function
+
+### Instruction decoder and machine state
 
 List of instruction associated with states:
 
@@ -66,7 +79,7 @@ List of all states:
 | `RAM_B`       |    |    |    | B   |     |    |    | X  |    |      |   |    |
 | `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |
 | `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |
-| `MOV_LOAD`    |    | X  |    | *   | *   |    | *  | *  |    |      |   |    |
+| `MOV_LOAD`    |    | *  |    | *   | *   |    | *  | *  |    |      |   |    |
 | `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |
 
 Special cases:
@@ -78,6 +91,7 @@ Graph of the FSM:
 
 ```
 [0]                            FETCH_PC
+                                   |
 [1]                            FETCH_INST
        |------------+--------------+--------------------------------|
      (HLT)        (OUT)          (MOV)                           (else)
@@ -86,17 +100,15 @@ Graph of the FSM:
        |            |              |          (JNZ/JMP/JEZ)       (else)          (LDI)
 [3]   NEXT         NEXT         MOV_LOAD          JUMP          LOAD_ADDR          LDI
                                    |               |                |               |
-                                   |               |                |               |
                                    |               |            (ALU ops)           |
 [4]                             MOV_STORE         NEXT            RAM_B            NEXT
-                                   |                                |
                                    |                                |
 [5]                              NEXT                            ALU_OP
                                                                     |
 [6]                                                               NEXT
 ```
 
-## Clocks
+### Clocks
 
 ```
 CLK:
@@ -123,6 +135,8 @@ INTERNAL_CLK:
                   |   |       |   |
           +---+---+   +---+---+   +
 ```
+
+
 
 ## Resources
 
