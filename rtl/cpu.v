@@ -136,19 +136,19 @@ module cpu(
   assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
   assign alu_mode     = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
-  assign sel_in = (state == `STATE_ALU_OP | state == `STATE_RAM_A) ? 0 :
+  assign sel_in = (state == `STATE_ALU_OP) ? 0 :
                   (state == `STATE_RAM_B) ? 1 :
                   (state == `STATE_LDI) ? operand2 :
                   (state == `STATE_MOV_STORE) ? operand1 :
                   'bx;
 
-  assign sel_out = (state == `STATE_OUT_A | state == `STATE_STORE_A) ? 0 :
+  assign sel_out = (state == `STATE_OUT_A) ? 0 :
                    (state == `STATE_MOV_STORE) ? operand2 :
                    'bx;
 
-  assign c_rfi  = state == `STATE_RAM_A | state == `STATE_ALU_OP | state == `STATE_RAM_B |
+  assign c_rfi  = state == `STATE_ALU_OP | state == `STATE_RAM_B |
                   state == `STATE_LDI | (state == `STATE_MOV_STORE && operand1 != 3'b111);
-  assign c_rfo  = state == `STATE_OUT_A | state == `STATE_STORE_A | (state == `STATE_MOV_STORE && operand2 != 3'b111);
+  assign c_rfo  = state == `STATE_OUT_A | (state == `STATE_MOV_STORE && operand2 != 3'b111);
   assign c_ci   = state == `STATE_FETCH_INST | state == `STATE_JUMP | state == `STATE_LOAD_ADDR |
                   state == `STATE_LDI | (state == `STATE_MOV_LOAD & mov_memory);
   assign c_co   = state == `STATE_FETCH_PC  | (state == `STATE_MOV_FETCH && mov_memory);
@@ -159,9 +159,9 @@ module cpu(
   assign c_mi   = state == `STATE_FETCH_PC | state == `STATE_LOAD_ADDR | ((state == `STATE_MOV_FETCH | state == `STATE_MOV_LOAD) & mov_memory);
   assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST | (state == `STATE_JUMP & jump_allowed) |
-                  state == `STATE_RAM_A | state == `STATE_RAM_B | state == `STATE_LOAD_ADDR | state == `STATE_LDI |
+                  state == `STATE_RAM_B | state == `STATE_LOAD_ADDR | state == `STATE_LDI |
                   (state == `STATE_MOV_LOAD & mov_memory) | (state == `STATE_MOV_STORE & operand2 == 3'b111);
-  assign c_ri   = state == `STATE_STORE_A | (state == `STATE_MOV_STORE && operand1 == 3'b111);
+  assign c_ri   = (state == `STATE_MOV_STORE && operand1 == 3'b111);
 
   cpu_control m_ctrl (
     .opcode(opcode),

@@ -32,9 +32,7 @@ module cpu_control(
                  (code == `OP_LDI) ?  `STATE_LDI :
                  (code == `OP_MOV) ?  `STATE_MOV_LOAD :
                  `STATE_LOAD_ADDR;
-      4: state = (code == `OP_LDA) ? `STATE_RAM_A :
-                 (code == `OP_STA) ? `STATE_STORE_A :
-                 (code == `OP_ADD || code == `OP_SUB) ? `STATE_RAM_B :
+      4: state = (code == `OP_ADD || code == `OP_SUB) ? `STATE_RAM_B :
                  (code == `OP_MOV) ?  `STATE_MOV_STORE :
                  `STATE_NEXT;
       5: state = (code == `OP_ADD || code == `OP_SUB) ? `STATE_ALU_OP :

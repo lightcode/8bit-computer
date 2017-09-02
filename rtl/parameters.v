@@ -1,10 +1,8 @@
 `define OP_NOP 8'b00_000_000
-`define OP_LDA 8'b00_000_001
 `define OP_OUT 8'b00_000_011
 `define OP_JMP 8'b00_000_100
 `define OP_HLT 8'b00_000_101
 `define OP_JEZ 8'b00_000_111
-`define OP_STA 8'b00_001_000
 `define OP_JNZ 8'b00_001_001
 `define OP_LDI 8'b00_010_000
 `define OP_ADD 8'b01_000_000
@@ -21,9 +19,7 @@
 `define STATE_HALT             4'h3
 `define STATE_JUMP             4'h4
 `define STATE_OUT_A            4'h5
-`define STATE_RAM_A            4'h6
 `define STATE_RAM_B            4'h7
-`define STATE_STORE_A          4'h8
 `define STATE_LOAD_ADDR        4'h9
 `define STATE_ALU_OP           4'ha
 `define STATE_LDI              4'hb

@@ -19,20 +19,35 @@ make clean_computer && make run_computer
 ```
 
 
+## Instructions list
+
+* ``lda`` is an alias for ``mov r M D``
+* ``sta`` is an alias for ``mov M r D``
+* ``add D``
+* ``sub D``
+* ``out``
+* ``hlt``
+* ``jmp D``
+* ``jez D``
+* ``jnz D``
+* ``ldi r D``
+* ``mov r M D``
+* ``mov r2 r1``
+* ``mov M r D``
+
+
 ## Instruction decoder and machine state
 
 List of instruction associated with states:
 
 ```
 NOP : FETCH_PC, FETCH_INST
-LDA : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_A
 ADD : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
 SUB : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
 OUT : FETCH_PC, FETCH_INST, OUT_A
 JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 HLT : FETCH_PC, FETCH_INST, HALT
-STA : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, STORE_A
 JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 LDI : FETCH_PC, FETCH_INST, FETCH_PC, LDI
 MOV : FETCH_PC, FETCH_INST, MOV_FETCH, MOV_LOAD, MOV_STORE
@@ -49,9 +64,7 @@ List of all states:
 | `JUMP`        |    | X  |    |     |     |    |    | 1  |    |      | 1 |    |
 | `LOAD_ADDR`   |    | X  |    |     |     |    | X  | X  |    |      |   |    |
 | `OUT_A`       |    |    |    |     | A   |    |    |    |    |      |   | X  |
-| `RAM_A`       |    |    |    | A   |     |    |    | X  |    |      |   |    |
 | `RAM_B`       |    |    |    | B   |     |    |    | X  |    |      |   |    |
-| `STORE_A`     |    |    |    |     | A   |    |    |    | X  |      |   |    |
 | `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |
 | `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |
 | `MOV_LOAD`    |    | X  |    | *   | *   |    | *  | *  |    |      |   |    |
@@ -65,23 +78,23 @@ Special cases:
 Graph of the FSM:
 
 ```
-[0]             FETCH_PC
-[1]            FETCH_INST
-       |------------+--------------+--------------------------|
-     (HLT)        (OUT)          (MOV)                      (else)
-[2]  HALT         OUT_A         MOV_FETCH                  FETCH_PC
-       |            |              |               |----------+--------------+--------------------------|
-       |            |              |          (JNZ/JMP/JEZ)                (else)                     (LDI)
-[3]   NEXT         NEXT         MOV_LOAD          JUMP                   LOAD_ADDR                     LDI
-                                   |               |                         |                          |
-                                   |               |               |---------|-------------|            |
-                                   |               |            (STA)      (LDA)       (ADD/SUB)        |
-[4]                             MOV_STORE         NEXT         STORE_A     RAM_A         RAM_B        NEXT
-                                   |                               |          |            |
-                                   |                               |          |            |
-[5]                              NEXT                            NEXT        NEXT       ALU_OP
-                                                                                           |
-[6]                                                                                      NEXT
+[0]                            FETCH_PC
+[1]                            FETCH_INST
+       |------------+--------------+--------------------------------|
+     (HLT)        (OUT)          (MOV)                           (else)
+[2]  HALT         OUT_A         MOV_FETCH                        FETCH_PC
+       |            |              |               |----------------+---------------|
+       |            |              |          (JNZ/JMP/JEZ)       (else)          (LDI)
+[3]   NEXT         NEXT         MOV_LOAD          JUMP          LOAD_ADDR          LDI
+                                   |               |                |               |
+                                   |               |                |               |
+                                   |               |            (ADD/SUB)           |
+[4]                             MOV_STORE         NEXT            RAM_B            NEXT
+                                   |                                |
+                                   |                                |
+[5]                              NEXT                            ALU_OP
+                                                                    |
+[6]                                                               NEXT
 ```
 
 ## Clocks

@@ -6,12 +6,12 @@ progf = sys.argv[1]
 
 inst = {
     "nop": 0x00,
-    "lda": 0x01,
+    "lda": 0b10000111,
     "out": 0x03,
     "jmp": 0x04,
     "hlt": 0x05,
     "jez": 0x07,
-    "sta": 0x08,
+    "sta": 0b10111000,
     "jnz": 0x09,
     "add": 0b01000000,
     "sub": 0b01001000,
