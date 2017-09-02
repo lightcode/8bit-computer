@@ -5,12 +5,12 @@
 `define OP_JEZ 8'b00_000_111
 `define OP_JNZ 8'b00_001_001
 `define OP_LDI 8'b00_010_000
-`define OP_ADD 8'b01_000_000
-`define OP_SUB 8'b01_001_000
+`define OP_ALU 8'b01_000_000
 `define OP_MOV 8'b10_000_000
 
 `define PATTERN_LDI 8'b00_010_???
 `define PATTERN_MOV 8'b10_???_???
+`define PATTERN_ALU 8'b01_???_000
 
 
 `define STATE_NEXT             4'h0

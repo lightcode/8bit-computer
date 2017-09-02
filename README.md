@@ -42,8 +42,7 @@ List of instruction associated with states:
 
 ```
 NOP : FETCH_PC, FETCH_INST
-ADD : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
-SUB : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
+ALU : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
 OUT : FETCH_PC, FETCH_INST, OUT_A
 JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
@@ -88,7 +87,7 @@ Graph of the FSM:
 [3]   NEXT         NEXT         MOV_LOAD          JUMP          LOAD_ADDR          LDI
                                    |               |                |               |
                                    |               |                |               |
-                                   |               |            (ADD/SUB)           |
+                                   |               |            (ALU ops)           |
 [4]                             MOV_STORE         NEXT            RAM_B            NEXT
                                    |                                |
                                    |                                |

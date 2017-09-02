@@ -17,6 +17,7 @@ module cpu_control(
     casez (opcode)
       `PATTERN_LDI: code = `OP_LDI;
       `PATTERN_MOV: code = `OP_MOV;
+      `PATTERN_ALU: code = `OP_ALU;
       default: code = opcode;
     endcase
 
@@ -32,10 +33,10 @@ module cpu_control(
                  (code == `OP_LDI) ?  `STATE_LDI :
                  (code == `OP_MOV) ?  `STATE_MOV_LOAD :
                  `STATE_LOAD_ADDR;
-      4: state = (code == `OP_ADD || code == `OP_SUB) ? `STATE_RAM_B :
+      4: state = (code == `OP_ALU) ? `STATE_RAM_B :
                  (code == `OP_MOV) ?  `STATE_MOV_STORE :
                  `STATE_NEXT;
-      5: state = (code == `OP_ADD || code == `OP_SUB) ? `STATE_ALU_OP :
+      5: state = (code == `OP_ALU) ? `STATE_ALU_OP :
                  `STATE_NEXT;
       6: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
