@@ -19,13 +19,11 @@
 `define STATE_HALT             4'h3
 `define STATE_JUMP             4'h4
 `define STATE_OUT_A            4'h5
-`define STATE_RAM_B            4'h7
-`define STATE_LOAD_ADDR        4'h9
-`define STATE_ALU_OP           4'ha
-`define STATE_LDI              4'hb
-`define STATE_MOV_STORE        4'hc
-`define STATE_MOV_FETCH        4'hd
-`define STATE_MOV_LOAD         4'he
+`define STATE_ALU_OP           4'h6
+`define STATE_LDI              4'h7
+`define STATE_MOV_STORE        4'h8
+`define STATE_MOV_FETCH        4'h9
+`define STATE_MOV_LOAD         4'ha
 
 `define ALU_ADD 3'b000
 `define ALU_SUB 3'b001

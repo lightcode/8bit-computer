@@ -27,8 +27,8 @@ make clean_computer && make run_computer
 |---------------|------------------------------------------------------------|
 | ``lda``       | Alias for ``mov A M D``                                    |
 | ``sta``       | Alias for ``mov M A D``                                    |
-| ``add D``     | Add value from address _D_ to A                            |
-| ``sub D``     | Substract value from address _D_ from A                    |
+| ``add``       | Perform A = A + B (A, B are registers)                     |
+| ``sub``       | Perform A = A - B (A, B are registers)                     |
 | ``out``       | Display the content of A                                   |
 | ``hlt``       | Halt the CPU                                               |
 | ``jmp D``     | Jump to _D_                                                |
@@ -55,7 +55,7 @@ List of instruction associated with states:
 
 ```
 NOP : FETCH_PC, FETCH_INST
-ALU : FETCH_PC, FETCH_INST, FETCH_PC, LOAD_ADDR, RAM_B, ALU_OP
+ALU : FETCH_PC, FETCH_INST, ALU_OP
 OUT : FETCH_PC, FETCH_INST, OUT_A
 JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
@@ -74,9 +74,7 @@ List of all states:
 | `FETCH_PC`    |    |    | X  |     |     |    | X  |    |    |      |   |    |
 | `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |
 | `JUMP`        |    | X  |    |     |     |    |    | 1  |    |      | 1 |    |
-| `LOAD_ADDR`   |    | X  |    |     |     |    | X  | X  |    |      |   |    |
 | `OUT_A`       |    |    |    |     | A   |    |    |    |    |      |   | X  |
-| `RAM_B`       |    |    |    | B   |     |    |    | X  |    |      |   |    |
 | `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |
 | `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |
 | `MOV_LOAD`    |    | *  |    | *   | *   |    | *  | *  |    |      |   |    |
@@ -93,19 +91,17 @@ Graph of the FSM:
 [0]                            FETCH_PC
                                    |
 [1]                            FETCH_INST
-       |------------+--------------+--------------------------------|
-     (HLT)        (OUT)          (MOV)                           (else)
-[2]  HALT         OUT_A         MOV_FETCH                        FETCH_PC
-       |            |              |               |----------------+---------------|
-       |            |              |          (JNZ/JMP/JEZ)       (else)          (LDI)
-[3]   NEXT         NEXT         MOV_LOAD          JUMP          LOAD_ADDR          LDI
-                                   |               |                |               |
-                                   |               |            (ALU ops)           |
-[4]                             MOV_STORE         NEXT            RAM_B            NEXT
-                                   |                                |
-[5]                              NEXT                            ALU_OP
-                                                                    |
-[6]                                                               NEXT
+       |------------+--------------+----------+---------------------|
+     (HLT)        (OUT)          (MOV)      (ALU)                (else)
+[2]  HALT         OUT_A         MOV_FETCH   ALU_OP                FETCH_PC
+       |            |              |                    |-----------+---------------|
+       |            |              |               (JNZ/JMP/JEZ)                  (LDI)
+[3]   NEXT         NEXT         MOV_LOAD               JUMP                        LDI
+                                   |                    |                           |
+                                   |                    |                           |
+[4]                             MOV_STORE              NEXT                        NEXT
+                                   |
+[5]                              NEXT
 ```
 
 ### Clocks

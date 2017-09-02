@@ -26,19 +26,16 @@ module cpu_control(
       1: state = `STATE_FETCH_INST;
       2: state = (code == `OP_HLT) ? `STATE_HALT :
                  (code == `OP_OUT) ? `STATE_OUT_A :
-                 (code == `OP_MOV) ?  `STATE_MOV_FETCH :
+                 (code == `OP_MOV) ? `STATE_MOV_FETCH :
+                 (code == `OP_ALU) ? `STATE_ALU_OP :
                  `STATE_FETCH_PC;
-      3: state = (code == `OP_HLT || code == `OP_OUT) ? `STATE_NEXT :
-                 (code == `OP_JMP || code == `OP_JEZ || code == `OP_JNZ) ? `STATE_JUMP :
-                 (code == `OP_LDI) ?  `STATE_LDI :
-                 (code == `OP_MOV) ?  `STATE_MOV_LOAD :
-                 `STATE_LOAD_ADDR;
-      4: state = (code == `OP_ALU) ? `STATE_RAM_B :
-                 (code == `OP_MOV) ?  `STATE_MOV_STORE :
+      3: state = (code == `OP_JMP || code == `OP_JEZ || code == `OP_JNZ) ? `STATE_JUMP :
+                 (code == `OP_LDI) ? `STATE_LDI :
+                 (code == `OP_MOV) ? `STATE_MOV_LOAD :
                  `STATE_NEXT;
-      5: state = (code == `OP_ALU) ? `STATE_ALU_OP :
+      4: state = (code == `OP_MOV) ? `STATE_MOV_STORE :
                  `STATE_NEXT;
-      6: state = `STATE_NEXT;
+      5: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
     endcase
 

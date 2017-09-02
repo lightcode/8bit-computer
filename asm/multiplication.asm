@@ -3,11 +3,13 @@
 start:
 
 lda %r
-add %a
+ldi B 4
+add
 sta %r
 
 lda %i
-sub %k
+ldi B 1
+sub
 sta %i
 
 jnz %start
@@ -19,7 +21,5 @@ hlt
 
 .data
 
-k = 1
 r = 0
 i = 4
-a = 4
