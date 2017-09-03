@@ -6,6 +6,8 @@ progf = sys.argv[1]
 
 inst = {
     "nop": 0x00,
+    "call": 0b00000001,
+    "ret": 0b00000010,
     "lda": 0b10000111,
     "out": 0x03,
     "jmp": 0x04,

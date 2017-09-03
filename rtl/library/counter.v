@@ -3,6 +3,7 @@ module counter(
   input wire [WIDTH-1:0] in,
   input wire sel_in,
   input wire reset,
+  input wire down,
   output reg [WIDTH-1:0] out
 );
 
@@ -15,7 +16,10 @@ module counter(
     if (sel_in)
       out <= in;
     else
-      out <= out + 1;
+      if (down)
+        out <= out - 1;
+      else
+        out <= out + 1;
   end
 
   always @(posedge reset) begin

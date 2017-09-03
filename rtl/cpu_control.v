@@ -2,7 +2,7 @@ module cpu_control(
   input wire [7:0] opcode,
   input wire clk,
   input wire reset_cycle,
-  output reg [3:0] state,
+  output reg [7:0] state,
   output reg [3:0] cycle
 );
 
@@ -28,14 +28,23 @@ module cpu_control(
                  (code == `OP_OUT) ? `STATE_OUT_A :
                  (code == `OP_MOV) ? `STATE_MOV_FETCH :
                  (code == `OP_ALU) ? `STATE_ALU_OP :
+                 (code == `OP_RET) ? `STATE_INC_SP :
                  `STATE_FETCH_PC;
       3: state = (code == `OP_JMP || code == `OP_JEZ || code == `OP_JNZ) ? `STATE_JUMP :
                  (code == `OP_LDI) ? `STATE_LDI :
                  (code == `OP_MOV) ? `STATE_MOV_LOAD :
+                 (code == `OP_CALL) ? `STATE_TMP_STORE :
+                 (code == `OP_RET) ? `STATE_FETCH_SP :
                  `STATE_NEXT;
       4: state = (code == `OP_MOV) ? `STATE_MOV_STORE :
+                 (code == `OP_CALL) ? `STATE_FETCH_SP :
+                 (code == `OP_RET) ? `STATE_RET :
                  `STATE_NEXT;
-      5: state = `STATE_NEXT;
+      5: state = (code == `OP_CALL) ? `STATE_PC_STORE :
+                 `STATE_NEXT;
+      6: state = (code == `OP_CALL) ? `STATE_TMP_JUMP :
+                 `STATE_NEXT;
+      7: state = `STATE_NEXT;
       default: $display("Cannot decode : cycle = %d, opcode = %h", cycle, opcode);
     endcase
 

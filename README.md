@@ -38,6 +38,8 @@ make clean_computer && make run_computer
 | ``mov r M D`` | Copy the data at memory address D into register _r_        |
 | ``mov r2 r1`` | Copy register _r1_ into _r2_                               |
 | ``mov M r D`` | Copy the data from register _r_ into memory in address _D_ |
+| ``call D``    | Call sub-routine _D_                                       |
+| ``ret``       | Return to the parent routine                               |
 
 Legend:
 
@@ -54,31 +56,39 @@ Legend:
 List of instruction associated with states:
 
 ```
-NOP : FETCH_PC, FETCH_INST
-ALU : FETCH_PC, FETCH_INST, ALU_OP
-OUT : FETCH_PC, FETCH_INST, OUT_A
-JMP : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-JEZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-HLT : FETCH_PC, FETCH_INST, HALT
-JNZ : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-LDI : FETCH_PC, FETCH_INST, FETCH_PC, LDI
-MOV : FETCH_PC, FETCH_INST, MOV_FETCH, MOV_LOAD, MOV_STORE
+NOP  : FETCH_PC, FETCH_INST
+ALU  : FETCH_PC, FETCH_INST, ALU_OP
+OUT  : FETCH_PC, FETCH_INST, OUT_A
+JMP  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
+JEZ  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
+HLT  : FETCH_PC, FETCH_INST, HALT
+JNZ  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
+LDI  : FETCH_PC, FETCH_INST, FETCH_PC, LDI
+MOV  : FETCH_PC, FETCH_INST, MOV_FETCH, MOV_LOAD, MOV_STORE
+CALL : FETCH_PC, FETCH_INST, FETCH_PC, TMP_STORE, FETCH_SP, PC_STORE, TMP_JUMP
+RET  : FETCH_PC, FETCH_INST, INC_SP, FETCH_SP, RET
 ```
 
 List of all states:
 
-| State         | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | OI |
-|---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|
-| `ALU_OP`      |    |    |    | A   |     | X  |    |    |    |      |   |    |
-| `FETCH_INST`  | X  | X  |    |     |     |    |    | X  |    |      |   |    |
-| `FETCH_PC`    |    |    | X  |     |     |    | X  |    |    |      |   |    |
-| `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |
-| `JUMP`        |    | X  |    |     |     |    |    | 1  |    |      | 1 |    |
-| `OUT_A`       |    |    |    |     | A   |    |    |    |    |      |   | X  |
-| `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |
-| `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |
-| `MOV_LOAD`    |    | *  |    | *   | *   |    | *  | *  |    |      |   |    |
-| `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |
+| State         | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | OI | SO | SD | SI |
+|---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|----|----|----|
+| `ALU_OP`      |    |    |    | A   |     | X  |    |    |    |      |   |    |    |    |    |
+| `FETCH_INST`  | X  | X  |    |     |     |    |    | X  |    |      |   |    |    |    |    |
+| `FETCH_PC`    |    |    | X  |     |     |    | X  |    |    |      |   |    |    |    |    |
+| `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |    |    |    |
+| `JUMP`        |    | X  |    |     |     |    |    | 1  |    |      | 1 |    |    |    |    |
+| `OUT_A`       |    |    |    |     | A   |    |    |    |    |      |   | X  |    |    |    |
+| `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |    |    |    |
+| `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |    |    |    |
+| `MOV_LOAD`    |    | *  |    | *   | *   |    | *  | *  |    |      |   |    |    |    |    |
+| `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |    |
+| `TMP_STORE`   |    | X  |    | T   |     |    |    | X  |    |      |   |    |    |    |    |
+| `FETCH_SP`    |    |    |    |     |     |    | X  |    |    |      |   |    | X  |    |    |
+| `PC_STORE`    |    |    | X  |     |     |    |    |    | X  |      |   |    |    |    |    |
+| `TMP_JUMP`    |    | X  |    |     | T   |    |    |    |    |      | X |    |    | X  | X  |
+| `RET`         |    | X  |    |     |     |    |    | X  |    |      | X |    |    |    |    |
+| `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    |    | X  |
 
 Special cases:
 
@@ -91,17 +101,21 @@ Graph of the FSM:
 [0]                            FETCH_PC
                                    |
 [1]                            FETCH_INST
-       |------------+--------------+----------+---------------------|
-     (HLT)        (OUT)          (MOV)      (ALU)                (else)
-[2]  HALT         OUT_A         MOV_FETCH   ALU_OP                FETCH_PC
-       |            |              |                    |-----------+---------------|
-       |            |              |               (JNZ/JMP/JEZ)                  (LDI)
-[3]   NEXT         NEXT         MOV_LOAD               JUMP                        LDI
-                                   |                    |                           |
-                                   |                    |                           |
-[4]                             MOV_STORE              NEXT                        NEXT
-                                   |
-[5]                              NEXT
+       |------------+--------------+----------+-----------+-----------------------|
+     (HLT)        (OUT)          (MOV)      (ALU)       (RET)                   (else)
+[2]  HALT         OUT_A         MOV_FETCH   ALU_OP      INC_SP                 FETCH_PC
+       |            |              |                      |          |-------------+------------|
+       |            |              |                      |     (JNZ/JMP/JEZ)    (LDI)        (CALL)
+[3]   NEXT         NEXT         MOV_LOAD               FETCH_SP     JUMP          LDI        TMP_STORE
+                                   |                      |          |             |            |
+                                   |                      |          |             |            |
+[4]                             MOV_STORE                RET        NEXT          NEXT       FETCH_SP
+                                   |                      |                                     |
+[5]                              NEXT                   NEXT                                 PC_STORE
+                                                                                                |
+[6]                                                                                          TMP_JUMP
+                                                                                                |
+[7]                                                                                           NEXT
 ```
 
 ### Clocks

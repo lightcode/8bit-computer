@@ -10,7 +10,7 @@ module cpu_registers(
   output wire [7:0] regb
 );
 
-  reg [7:0] registers[2:0];
+  reg [7:0] registers[0:7];
 
   always @ (posedge clk) begin
     if (enable_write)
@@ -18,7 +18,15 @@ module cpu_registers(
   end
 
   assign data_out = (output_enable) ? registers[sel_out] : 'bz;
+
+  wire [7:0] regc, regd, rege, regf, regg, regt;
   assign rega = registers[0];
   assign regb = registers[1];
+  assign regc = registers[2];
+  assign regd = registers[3];
+  assign rege = registers[4];
+  assign regf = registers[5];
+  assign regg = registers[6];
+  assign regt = registers[7];
 
 endmodule
