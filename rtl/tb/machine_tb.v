@@ -31,28 +31,27 @@ module machine_tb;
     $readmemh("memory.list", m_machine.m_ram.mem);
     $dumpfile("machine.vcd");
     $dumpvars(0, m_machine);
-  end
 
-  initial begin
     # 10 reset = 1;
     # 10 reset = 0;
     # 10 enable_clk = 1;
-    $monitor(
-      "[%08d] bus: %h, pc: %h, cycle: %h, state: %h, opcode: %h, a: %h, b: %h, alu: %h, mar: %h, eq_zero: %b, alu_mode: %b",
-      $time,
-      m_machine.m_cpu.bus,
-      m_machine.m_cpu.pc_out,
-      m_machine.m_cpu.cycle,
-      m_machine.m_cpu.state,
-      m_machine.m_cpu.opcode,
-      m_machine.m_cpu.rega_out,
-      m_machine.m_cpu.regb_out,
-      m_machine.m_cpu.alu_out,
-      m_machine.m_cpu.addr_bus,
-      m_machine.m_cpu.eq_zero,
-      m_machine.m_cpu.alu_mode
+  end
+
+  always @ (posedge m_machine.m_cpu.halted) begin
+    $display("============================================");
+    $display("CPU halted normally.");
+    $display(
+      "REGISTERS: A: %h, B: %h, C: %h, D: %h, E: %h, F: %h, G: %h, Temp: %h",
+      m_machine.m_cpu.m_registers.rega,
+      m_machine.m_cpu.m_registers.regb,
+      m_machine.m_cpu.m_registers.regc,
+      m_machine.m_cpu.m_registers.regd,
+      m_machine.m_cpu.m_registers.rege,
+      m_machine.m_cpu.m_registers.regf,
+      m_machine.m_cpu.m_registers.regg,
+      m_machine.m_cpu.m_registers.regt
     );
-    # 20000 $display("Kill to prevent looping."); $stop;
+    $stop;
   end
 
 endmodule

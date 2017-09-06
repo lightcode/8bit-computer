@@ -17,7 +17,8 @@ module cpu(
   reg cycle_clk = 0;
   reg internal_clk = 0;
   reg [2:0] cnt = 'b100;
-  always @ (posedge clk) begin
+  reg halted = 0;
+  always @ (posedge clk & ~halted) begin
     {cycle_clk, mem_clk, internal_clk} <= cnt;
 
     case (cnt)
@@ -219,12 +220,11 @@ module cpu(
   );
 
   always @ (posedge c_halt) begin
-    $display("Halted.");
-    $stop;
+    halted = 1;
   end
 
   always @ (posedge c_oi) begin
-    $display("Output: %d (%h)", rega_out, rega_out);
+    $display("Output: %d ($%h)", rega_out, rega_out);
   end
 
 endmodule
