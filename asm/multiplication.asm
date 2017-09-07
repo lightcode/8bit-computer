@@ -8,8 +8,7 @@ add
 sta %r
 
 lda %i
-ldi B 1
-sub
+dec
 sta %i
 
 jnz %start

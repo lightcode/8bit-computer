@@ -14,6 +14,8 @@ module alu(
 
   assign {cout, out} = (mode == `ALU_SUB) ? in_a - in_b :
                        (mode == `ALU_ADD) ? in_a + in_b + cin :
+                       (mode == `ALU_INC) ? in_a + 1 :
+                       (mode == `ALU_DEC) ? in_a - 1 :
                        'bx;
   assign eq_zero = (in_a == 0) ? 1 : 0;
 

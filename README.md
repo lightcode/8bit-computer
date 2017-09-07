@@ -29,6 +29,8 @@ make clean_computer && make run_computer
 | ``sta``       | Alias for ``mov M A D``                                    |
 | ``add``       | Perform A = A + B (A, B are registers)                     |
 | ``sub``       | Perform A = A - B (A, B are registers)                     |
+| ``inc``       | Perform A = A + 1 (A is a register)                        |
+| ``dec``       | Perform A = A - 1 (A is a register)                        |
 | ``out``       | Display the content of A                                   |
 | ``hlt``       | Halt the CPU                                               |
 | ``jmp D``     | Jump to _D_                                                |

@@ -35,5 +35,7 @@
 
 `define ALU_ADD 3'b000
 `define ALU_SUB 3'b001
+`define ALU_INC 3'b010
+`define ALU_DEC 3'b011
 
 `define REG_T 3'b111
