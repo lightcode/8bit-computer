@@ -34,7 +34,7 @@ make clean_computer && make run_computer
 | ``out``       | Display the content of A                                   |
 | ``hlt``       | Halt the CPU                                               |
 | ``jmp D``     | Jump to _D_                                                |
-| ``jez D``     | Jump to _D_ if register A is equal to zero                 |
+| ``jz D ``     | Jump to _D_ if register A is equal to zero                 |
 | ``jnz D``     | Jump to _D_ if register A is not equat to zero             |
 | ``ldi r D``   | Load _D_ into _r_ register                                 |
 | ``mov r M D`` | Copy the data at memory address D into register _r_        |
@@ -62,7 +62,7 @@ NOP  : FETCH_PC, FETCH_INST
 ALU  : FETCH_PC, FETCH_INST, ALU_OP
 OUT  : FETCH_PC, FETCH_INST, OUT_A
 JMP  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-JEZ  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
+JZ   : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 HLT  : FETCH_PC, FETCH_INST, HALT
 JNZ  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 LDI  : FETCH_PC, FETCH_INST, FETCH_PC, LDI
@@ -107,7 +107,7 @@ Graph of the FSM:
      (HLT)        (OUT)          (MOV)      (ALU)       (RET)                   (else)
 [2]  HALT         OUT_A         MOV_FETCH   ALU_OP      INC_SP                 FETCH_PC
        |            |              |                      |          |-------------+------------|
-       |            |              |                      |     (JNZ/JMP/JEZ)    (LDI)        (CALL)
+       |            |              |                      |     (JNZ/JMP/JZ)     (LDI)        (CALL)
 [3]   NEXT         NEXT         MOV_LOAD               FETCH_SP     JUMP          LDI        TMP_STORE
                                    |                      |          |             |            |
                                    |                      |          |             |            |

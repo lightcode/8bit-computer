@@ -156,7 +156,7 @@ module cpu(
   assign next_state = state == `STATE_NEXT | reset;
 
   assign mov_memory   = operand1 == 3'b111 | operand2 == 3'b111;
-  assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JEZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
+  assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
   assign alu_mode     = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
   assign sel_in = (state == `STATE_ALU_OP) ? 0 :

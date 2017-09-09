@@ -4,7 +4,7 @@
 `define OP_OUT  8'b00_000_011
 `define OP_JMP  8'b00_000_100
 `define OP_HLT  8'b00_000_101
-`define OP_JEZ  8'b00_000_111
+`define OP_JZ   8'b00_000_111
 `define OP_JNZ  8'b00_001_001
 `define OP_LDI  8'b00_010_000
 `define OP_ALU  8'b01_000_000
