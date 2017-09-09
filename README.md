@@ -1,7 +1,10 @@
 Simple 8-bit computer in Verilog
 ================================
 
-This computer is inspired by [Ben Eater's computer](https://eater.net/8bit/) and by [Edmund Horner's CPU](https://github.com/ejrh/cpu).
+This project contains:
+
+* a 8-bit CPU with a basic instruction set
+* 256 bytes of RAM
 
 
 
@@ -21,7 +24,7 @@ make clean_computer && make run_computer
 
 ## Assembly
 
-### Instructions list
+### Instructions set
 
 | Instruction   | Description                                                |
 |---------------|------------------------------------------------------------|
@@ -55,70 +58,46 @@ Legend:
 
 ## Internal function
 
-### Instruction decoder and machine state
+### Instruction decoding
+
+T1 and T2 are always `FETCH_PC` and `FETCH_INST`.
 
 List of instruction associated with states:
 
-```
-NOP  : FETCH_PC, FETCH_INST
-ALU  : FETCH_PC, FETCH_INST, ALU_OP
-OUT  : FETCH_PC, FETCH_INST, OUT_A
-HLT  : FETCH_PC, FETCH_INST, HALT
-JMP  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-LDI  : FETCH_PC, FETCH_INST, FETCH_PC, LDI
-MOV  : FETCH_PC, FETCH_INST, MOV_FETCH, MOV_LOAD, MOV_STORE
-CALL : FETCH_PC, FETCH_INST, FETCH_PC, TMP_STORE, FETCH_SP, PC_STORE, TMP_JUMP
-RET  : FETCH_PC, FETCH_INST, INC_SP, FETCH_SP, RET
-```
+| Instruction | T3        | T4        | T5        | T6       | T7       |
+|-------------|-----------|-----------|-----------|----------|----------|
+| NOP         |           |           |           |          |          |
+| ALU         | ALU_OP    |           |           |          |          |
+| OUT         | OUT_A     |           |           |          |          |
+| HLT         | HALT      |           |           |          |          |
+| JMP         | FETCH_PC  | JUMP      |           |          |          |
+| LDI         | FETCH_PC  | LDI       |           |          |          |
+| MOV         | MOV_FETCH | MOV_LOAD  | MOV_STORE |          |          |
+| CALL        | FETCH_PC  | TMP_STORE | FETCH_SP  | PC_STORE | TMP_JUMP |
+| RET         | INC_SP    | FETCH_SP  | RET       |          |          |
 
-List of all states:
 
-| State         | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | OI | SO | SD | SI |
+States versus signals enabled:
+
+| States        | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | OI | SO | SD | SI |
 |---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|----|----|----|
-| `ALU_OP`      |    |    |    | A   |     | X  |    |    |    |      |   |    |    |    |    |
+| `ALU_OP`      |    |    |    | X   |     | X  |    |    |    |      |   |    |    |    |    |
 | `FETCH_INST`  | X  | X  |    |     |     |    |    | X  |    |      |   |    |    |    |    |
 | `FETCH_PC`    |    |    | X  |     |     |    | X  |    |    |      |   |    |    |    |    |
+| `FETCH_SP`    |    |    |    |     |     |    | X  |    |    |      |   |    | X  |    |    |
 | `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |    |    |    |
-| `JUMP`        |    | X  |    |     |     |    |    | 1  |    |      | 1 |    |    |    |    |
-| `OUT_A`       |    |    |    |     | A   |    |    |    |    |      |   | X  |    |    |    |
-| `LDI`         |    | X  |    | op2 |     |    |    | X  |    |      |   |    |    |    |    |
-| `MOV_FETCH`   |    |    | X  |     |     |    | X  |    |    |      |   |    |    |    |    |
+| `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    |    | X  |
+| `JUMP`        |    | X  |    |     |     |    |    | *  |    |      | * |    |    |    |    |
+| `LDI`         |    | X  |    | X   |     |    |    | X  |    |      |   |    |    |    |    |
+| `MOV_FETCH`   |    |    | *  |     |     |    | *  |    |    |      |   |    |    |    |    |
 | `MOV_LOAD`    |    | *  |    | *   | *   |    | *  | *  |    |      |   |    |    |    |    |
 | `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |    |
-| `TMP_STORE`   |    | X  |    | T   |     |    |    | X  |    |      |   |    |    |    |    |
-| `FETCH_SP`    |    |    |    |     |     |    | X  |    |    |      |   |    | X  |    |    |
+| `OUT_A`       |    |    |    |     | X   |    |    |    |    |      |   | X  |    |    |    |
 | `PC_STORE`    |    |    | X  |     |     |    |    |    | X  |      |   |    |    |    |    |
-| `TMP_JUMP`    |    | X  |    |     | T   |    |    |    |    |      | X |    |    | X  | X  |
 | `RET`         |    | X  |    |     |     |    |    | X  |    |      | X |    |    |    |    |
-| `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    |    | X  |
+| `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |      | X |    |    | X  | X  |
+| `TMP_STORE`   |    | X  |    | X   |     |    |    | X  |    |      |   |    |    |    |    |
 
-Special cases:
-
-1. Enabled when we have to jump
-
-
-Graph of the FSM:
-
-```
-[0]                            FETCH_PC
-                                   |
-[1]                            FETCH_INST
-       |------------+--------------+----------+-----------+-----------------------|
-     (HLT)        (OUT)          (MOV)      (ALU)       (RET)                   (else)
-[2]  HALT         OUT_A         MOV_FETCH   ALU_OP      INC_SP                 FETCH_PC
-       |            |              |                      |          |-------------+------------|
-       |            |              |                      |        (JMP)         (LDI)        (CALL)
-[3]   NEXT         NEXT         MOV_LOAD               FETCH_SP     JUMP          LDI        TMP_STORE
-                                   |                      |          |             |            |
-                                   |                      |          |             |            |
-[4]                             MOV_STORE                RET        NEXT          NEXT       FETCH_SP
-                                   |                      |                                     |
-[5]                              NEXT                   NEXT                                 PC_STORE
-                                                                                                |
-[6]                                                                                          TMP_JUMP
-                                                                                                |
-[7]                                                                                           NEXT
-```
 
 ### Clocks
 
