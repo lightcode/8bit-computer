@@ -120,7 +120,8 @@ module cpu(
   // ==========================
 
   wire c_eo;
-  wire eq_zero; // high when reg A is equal to 0
+  wire eq_zero;
+  wire alu_equal;
   wire [7:0] alu_out;
   wire [2:0] alu_mode;
   alu m_alu (
@@ -130,7 +131,8 @@ module cpu(
     .in_b(regb_out),
     .out(alu_out),
     .mode(alu_mode),
-    .eq_zero(eq_zero)
+    .eq_zero(eq_zero),
+    .equal(alu_equal)
   );
   tristate_buffer m_alu_buf (
     .in(alu_out),
@@ -156,7 +158,11 @@ module cpu(
   assign next_state = state == `STATE_NEXT | reset;
 
   assign mov_memory   = operand1 == 3'b111 | operand2 == 3'b111;
-  assign jump_allowed = opcode == `OP_JMP | (opcode == `OP_JZ & eq_zero) | (opcode == `OP_JNZ & !eq_zero);
+  assign jump_allowed = operand2 == `JMP_JMP |
+                       (operand2 == `JMP_JZ & eq_zero) |
+                       (operand2 == `JMP_JNZ & !eq_zero) |
+                       (operand2 == `JMP_JE & alu_equal) |
+                       (operand2 == `JMP_JNE & !alu_equal);
   assign alu_mode     = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
   assign sel_in = (state == `STATE_ALU_OP) ? 0 :

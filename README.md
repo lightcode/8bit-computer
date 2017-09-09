@@ -35,7 +35,9 @@ make clean_computer && make run_computer
 | ``hlt``       | Halt the CPU                                               |
 | ``jmp D``     | Jump to _D_                                                |
 | ``jz D ``     | Jump to _D_ if register A is equal to zero                 |
-| ``jnz D``     | Jump to _D_ if register A is not equat to zero             |
+| ``jnz D``     | Jump to _D_ if register A is not equal to zero             |
+| ``je D ``     | Jump to _D_ if register A is equal to register B           |
+| ``jne D``     | Jump to _D_ if register A is not equal to register B       |
 | ``ldi r D``   | Load _D_ into _r_ register                                 |
 | ``mov r M D`` | Copy the data at memory address D into register _r_        |
 | ``mov r2 r1`` | Copy register _r1_ into _r2_                               |
@@ -61,10 +63,8 @@ List of instruction associated with states:
 NOP  : FETCH_PC, FETCH_INST
 ALU  : FETCH_PC, FETCH_INST, ALU_OP
 OUT  : FETCH_PC, FETCH_INST, OUT_A
-JMP  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
-JZ   : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 HLT  : FETCH_PC, FETCH_INST, HALT
-JNZ  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
+JMP  : FETCH_PC, FETCH_INST, FETCH_PC, JUMP
 LDI  : FETCH_PC, FETCH_INST, FETCH_PC, LDI
 MOV  : FETCH_PC, FETCH_INST, MOV_FETCH, MOV_LOAD, MOV_STORE
 CALL : FETCH_PC, FETCH_INST, FETCH_PC, TMP_STORE, FETCH_SP, PC_STORE, TMP_JUMP
@@ -107,7 +107,7 @@ Graph of the FSM:
      (HLT)        (OUT)          (MOV)      (ALU)       (RET)                   (else)
 [2]  HALT         OUT_A         MOV_FETCH   ALU_OP      INC_SP                 FETCH_PC
        |            |              |                      |          |-------------+------------|
-       |            |              |                      |     (JNZ/JMP/JZ)     (LDI)        (CALL)
+       |            |              |                      |        (JMP)         (LDI)        (CALL)
 [3]   NEXT         NEXT         MOV_LOAD               FETCH_SP     JUMP          LDI        TMP_STORE
                                    |                      |          |             |            |
                                    |                      |          |             |            |

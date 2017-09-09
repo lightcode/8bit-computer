@@ -2,15 +2,14 @@
 `define OP_CALL 8'b00_000_001
 `define OP_RET  8'b00_000_010
 `define OP_OUT  8'b00_000_011
-`define OP_JMP  8'b00_000_100
 `define OP_HLT  8'b00_000_101
-`define OP_JZ   8'b00_000_111
-`define OP_JNZ  8'b00_001_001
 `define OP_LDI  8'b00_010_000
+`define OP_JMP  8'b00_011_000
 `define OP_ALU  8'b01_000_000
 `define OP_MOV  8'b10_000_000
 
 `define PATTERN_LDI 8'b00_010_???
+`define PATTERN_JMP 8'b00_011_???
 `define PATTERN_MOV 8'b10_???_???
 `define PATTERN_ALU 8'b01_???_000
 
@@ -37,5 +36,11 @@
 `define ALU_SUB 3'b001
 `define ALU_INC 3'b010
 `define ALU_DEC 3'b011
+
+`define JMP_JMP 3'b000
+`define JMP_JZ  3'b001
+`define JMP_JNZ 3'b010
+`define JMP_JE  3'b011
+`define JMP_JNE 3'b100
 
 `define REG_T 3'b111

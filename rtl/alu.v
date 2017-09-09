@@ -5,7 +5,8 @@ module alu(
   input wire [N-1:0] in_a,
   input wire [N-1:0] in_b,
   output wire [N-1:0] out,
-  output wire eq_zero
+  output wire eq_zero,
+  output wire equal
 );
 
   `include "rtl/parameters.v"
@@ -17,6 +18,7 @@ module alu(
                        (mode == `ALU_INC) ? in_a + 1 :
                        (mode == `ALU_DEC) ? in_a - 1 :
                        'bx;
-  assign eq_zero = (in_a == 0) ? 1 : 0;
+  assign eq_zero = (in_a == 0);
+  assign equal   = (in_a == in_b);
 
 endmodule

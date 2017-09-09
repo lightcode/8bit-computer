@@ -18,6 +18,7 @@ module cpu_control(
       `PATTERN_LDI: code = `OP_LDI;
       `PATTERN_MOV: code = `OP_MOV;
       `PATTERN_ALU: code = `OP_ALU;
+      `PATTERN_JMP: code = `OP_JMP;
       default: code = opcode;
     endcase
 
@@ -30,7 +31,7 @@ module cpu_control(
                  (code == `OP_ALU) ? `STATE_ALU_OP :
                  (code == `OP_RET) ? `STATE_INC_SP :
                  `STATE_FETCH_PC;
-      3: state = (code == `OP_JMP || code == `OP_JZ || code == `OP_JNZ) ? `STATE_JUMP :
+      3: state = (code == `OP_JMP) ? `STATE_JUMP :
                  (code == `OP_LDI) ? `STATE_LDI :
                  (code == `OP_MOV) ? `STATE_MOV_LOAD :
                  (code == `OP_CALL) ? `STATE_TMP_STORE :
