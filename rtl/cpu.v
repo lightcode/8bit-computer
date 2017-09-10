@@ -183,13 +183,11 @@ module cpu(
   assign c_rfo  = state == `STATE_OUT_A |
                   state == `STATE_TMP_JUMP |
                   (state == `STATE_MOV_STORE & operand2 != 3'b111);
-  assign c_ci   = state == `STATE_FETCH_INST |
-                  state == `STATE_JUMP |
-                  state == `STATE_LDI |
-                  state == `STATE_TMP_STORE |
+  assign c_ci   = state == `STATE_FETCH_PC |
                   state == `STATE_RET |
+                  (state == `STATE_JUMP & jump_allowed) |
                   state == `STATE_TMP_JUMP |
-                  (state == `STATE_MOV_LOAD & mov_memory);
+                  (state == `STATE_MOV_FETCH & mov_memory);
   assign c_co   = state == `STATE_FETCH_PC |
                   state == `STATE_PC_STORE |
                   (state == `STATE_MOV_FETCH & mov_memory);
