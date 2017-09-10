@@ -1,3 +1,5 @@
+*.gtkw
+*.vcd
+
 computer
 memory.list
-machine.vcd
