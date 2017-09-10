@@ -30,7 +30,8 @@ module cpu_control(
                  (code == `OP_MOV) ? `STATE_MOV_FETCH :
                  (code == `OP_ALU) ? `STATE_ALU_OP :
                  (code == `OP_RET) ? `STATE_INC_SP :
-                 `STATE_FETCH_PC;
+                 (code == `OP_CALL || code == `OP_LDI || code == `OP_JMP) ? `STATE_FETCH_PC :
+                 `STATE_NEXT;
       3: state = (code == `OP_JMP) ? `STATE_JUMP :
                  (code == `OP_LDI) ? `STATE_LDI :
                  (code == `OP_MOV) ? `STATE_MOV_LOAD :
