@@ -26,33 +26,61 @@ make clean_computer && make run_computer
 
 ### Instructions set
 
+#### Data transfert group
+
 | Instruction   | Description                                                |
 |---------------|------------------------------------------------------------|
 | ``lda``       | Alias for ``mov A M D``                                    |
 | ``sta``       | Alias for ``mov M A D``                                    |
-| ``add``       | Perform A = A + B (A, B are registers)                     |
-| ``sub``       | Perform A = A - B (A, B are registers)                     |
-| ``inc``       | Perform A = A + 1 (A is a register)                        |
-| ``dec``       | Perform A = A - 1 (A is a register)                        |
-| ``out``       | Display the content of A                                   |
-| ``hlt``       | Halt the CPU                                               |
-| ``jmp D``     | Jump to _D_                                                |
-| ``jz D ``     | Jump to _D_ if register A is equal to zero                 |
-| ``jnz D``     | Jump to _D_ if register A is not equal to zero             |
-| ``je D ``     | Jump to _D_ if register A is equal to register B           |
-| ``jne D``     | Jump to _D_ if register A is not equal to register B       |
 | ``ldi r D``   | Load _D_ into _r_ register                                 |
 | ``mov r M D`` | Copy the data at memory address D into register _r_        |
 | ``mov r2 r1`` | Copy register _r1_ into _r2_                               |
 | ``mov M r D`` | Copy the data from register _r_ into memory in address _D_ |
-| ``call D``    | Call sub-routine _D_                                       |
-| ``ret``       | Return to the parent routine                               |
+
 
 Legend:
 
 * _D_ is a byte of data. It can be a memory address or directly the data depending on the instruction.
 * _r_ is a register.
 * _M_ means "memory", it's used to tell to the ``mov`` instruction the source/destination of the copy.
+
+
+#### Arithmetic group
+
+| Instruction   | Description                                                |
+|---------------|------------------------------------------------------------|
+| ``add``       | Perform A = A + B (A, B are registers)                     |
+| ``sub``       | Perform A = A - B (A, B are registers)                     |
+| ``inc``       | Perform A = A + 1 (A is a register)                        |
+| ``dec``       | Perform A = A - 1 (A is a register)                        |
+
+
+#### Branching group
+
+| Instruction   | Description                                                |
+|---------------|------------------------------------------------------------|
+| ``jmp D``     | Jump to _D_                                                |
+| ``jz D ``     | Jump to _D_ if register A is equal to zero                 |
+| ``jnz D``     | Jump to _D_ if register A is not equal to zero             |
+| ``je D ``     | Jump to _D_ if register A is equal to register B           |
+| ``jne D``     | Jump to _D_ if register A is not equal to register B       |
+| ``call D``    | Call sub-routine _D_                                       |
+| ``ret``       | Return to the parent routine                               |
+
+
+#### Machine control
+
+| Instruction   | Description                                                |
+|---------------|------------------------------------------------------------|
+| ``nop``       | Do nothing                                                 |
+| ``hlt``       | Halt the CPU                                               |
+
+
+#### I/O group
+
+| Instruction   | Description                                                |
+|---------------|------------------------------------------------------------|
+| ``out``       | Display the content of A                                   |
 
 
 
