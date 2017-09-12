@@ -11,5 +11,5 @@ call %output
 ret
 
 output:
-out
+out 0
 ret

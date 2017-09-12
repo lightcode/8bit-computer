@@ -14,7 +14,7 @@ sta %i
 jnz %start
 
 lda %r
-out
+out 0
 hlt
 
 

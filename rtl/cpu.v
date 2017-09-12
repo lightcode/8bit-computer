@@ -5,6 +5,7 @@ module cpu(
   output wire c_ri,
   output wire c_ro,
   output reg mem_clk,
+  output wire mem_io,   // Select memory if low or I/O if high
   inout wire [7:0] bus
 );
 
@@ -145,7 +146,7 @@ module cpu(
   // Control logic
   // ==========================
 
-  wire c_halt, next_state, c_oi, mov_memory, jump_allowed;
+  wire c_halt, next_state, mov_memory, jump_allowed;
   wire [7:0] state;
   wire [7:0] opcode;
   wire [3:0] cycle;
@@ -156,6 +157,8 @@ module cpu(
   assign operand1   = opcode[5:3];
   assign operand2   = opcode[2:0];
   assign next_state = state == `STATE_NEXT | reset;
+
+  assign mem_io     = state == `STATE_OUT | state == `STATE_IN;
 
   assign mov_memory   = operand1 == 3'b111 | operand2 == 3'b111;
   assign jump_allowed = operand2 == `JMP_JMP |
@@ -169,18 +172,20 @@ module cpu(
                   (state == `STATE_LDI) ? operand2 :
                   (state == `STATE_MOV_STORE) ? operand1 :
                   (state == `STATE_TMP_STORE) ? `REG_T :
+                  (state == `STATE_IN) ? `REG_A :
                   'bx;
 
-  assign sel_out = (state == `STATE_OUT_A) ? 0 :
+  assign sel_out = (state == `STATE_OUT) ? 0 :
                    (state == `STATE_MOV_STORE) ? operand2 :
                    (state == `STATE_TMP_JUMP) ? `REG_T :
                    'bx;
 
   assign c_rfi  = state == `STATE_ALU_OP |
                   state == `STATE_LDI |
+                  state == `STATE_IN |
                   state == `STATE_TMP_STORE |
                   (state == `STATE_MOV_STORE & operand1 != 3'b111);
-  assign c_rfo  = state == `STATE_OUT_A |
+  assign c_rfo  = state == `STATE_OUT |
                   state == `STATE_TMP_JUMP |
                   (state == `STATE_MOV_STORE & operand2 != 3'b111);
   assign c_ci   = state == `STATE_FETCH_PC |
@@ -199,13 +204,14 @@ module cpu(
                   state == `STATE_TMP_JUMP;
   assign c_mi   = state == `STATE_FETCH_PC |
                   state == `STATE_FETCH_SP |
+                  state == `STATE_SET_ADDR |
                   ((state == `STATE_MOV_FETCH | state == `STATE_MOV_LOAD) & mov_memory);
-  assign c_oi   = state == `STATE_OUT_A;
   assign c_ro   = state == `STATE_FETCH_INST |
                   state == `STATE_TMP_STORE |
                   (state == `STATE_JUMP & jump_allowed) |
                   state == `STATE_LDI |
                   state == `STATE_RET |
+                  state == `STATE_SET_ADDR |
                   (state == `STATE_MOV_LOAD & mov_memory) |
                   (state == `STATE_MOV_STORE & operand2 == 3'b111);
   assign c_ri   = (state == `STATE_MOV_STORE & operand1 == 3'b111) |
@@ -225,10 +231,6 @@ module cpu(
 
   always @ (posedge c_halt) begin
     halted = 1;
-  end
-
-  always @ (posedge c_oi) begin
-    $display("Output: %d ($%h)", rega_out, rega_out);
   end
 
 endmodule

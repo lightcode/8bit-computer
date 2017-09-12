@@ -78,9 +78,10 @@ Legend:
 
 #### I/O group
 
-| Instruction   | Description                                                |
-|---------------|------------------------------------------------------------|
-| ``out``       | Display the content of A                                   |
+| Instruction   | Description                                                                  |
+|---------------|------------------------------------------------------------------------------|
+| `in D`        | Put the content of the data bus in the A register and set _D_ on address bus |
+| `out D`       | Put the content of accumulator on the data bus and set _D_ on address bus    |
 
 
 
@@ -96,7 +97,8 @@ List of instruction associated with states:
 |-------------|-----------|-----------|-----------|----------|----------|
 | NOP         |           |           |           |          |          |
 | ALU         | ALU_OP    |           |           |          |          |
-| OUT         | OUT_A     |           |           |          |          |
+| OUT         | FETCH_PC  | SET_ADDR  | OUT       |          |          |
+| IN          | FETCH_PC  | SET_ADDR  | IN        |          |          |
 | HLT         | HALT      |           |           |          |          |
 | JMP         | FETCH_PC  | JUMP      |           |          |          |
 | LDI         | FETCH_PC  | LDI       |           |          |          |
@@ -107,24 +109,26 @@ List of instruction associated with states:
 
 States versus signals enabled:
 
-| States        | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | OI | SO | SD | SI |
-|---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|----|----|----|
-| `ALU_OP`      |    |    |    | X   |     | X  |    |    |    |      |   |    |    |    |    |
-| `FETCH_INST`  | X  |    |    |     |     |    |    | X  |    |      |   |    |    |    |    |
-| `FETCH_PC`    |    | X  | X  |     |     |    | X  |    |    |      |   |    |    |    |    |
-| `FETCH_SP`    |    |    |    |     |     |    | X  |    |    |      |   |    | X  |    |    |
-| `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |    |    |    |
-| `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    |    | X  |
-| `JUMP`        |    | *  |    |     |     |    |    | *  |    |      | * |    |    |    |    |
-| `LDI`         |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |    |
-| `MOV_FETCH`   |    | *  | *  |     |     |    | *  |    |    |      |   |    |    |    |    |
-| `MOV_LOAD`    |    |    |    | *   | *   |    | *  | *  |    |      |   |    |    |    |    |
-| `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |    |
-| `OUT_A`       |    |    |    |     | X   |    |    |    |    |      |   | X  |    |    |    |
-| `PC_STORE`    |    |    | X  |     |     |    |    |    | X  |      |   |    |    |    |    |
-| `RET`         |    | X  |    |     |     |    |    | X  |    |      | X |    |    |    |    |
-| `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |      | X |    |    | X  | X  |
-| `TMP_STORE`   |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |    |
+| States        | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | SO | SD | SI | MEM/IO |
+|---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|----|----|--------|
+| `ALU_OP`      |    |    |    | X   |     | X  |    |    |    |      |   |    |    |    |        |
+| `FETCH_INST`  | X  |    |    |     |     |    |    | X  |    |      |   |    |    |    |        |
+| `FETCH_PC`    |    | X  | X  |     |     |    | X  |    |    |      |   |    |    |    |        |
+| `FETCH_SP`    |    |    |    |     |     |    | X  |    |    |      |   | X  |    |    |        |
+| `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |    |    |        |
+| `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    | X  |        |
+| `IN`          |    |    |    | X   |     |    |    |    |    |      |   |    |    |    | X      |
+| `JUMP`        |    | *  |    |     |     |    |    | *  |    |      | * |    |    |    |        |
+| `LDI`         |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
+| `MOV_FETCH`   |    | *  | *  |     |     |    | *  |    |    |      |   |    |    |    |        |
+| `MOV_LOAD`    |    |    |    | *   | *   |    | *  | *  |    |      |   |    |    |    |        |
+| `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |        |
+| `OUT`         |    |    |    |     | X   |    |    |    |    |      |   |    |    |    | X      |
+| `PC_STORE`    |    |    | X  |     |     |    |    |    | X  |      |   |    |    |    |        |
+| `RET`         |    | X  |    |     |     |    |    | X  |    |      | X |    |    |    |        |
+| `SET_ADDR`    |    |    |    |     |     |    | X  | X  |    |      |   |    |    |    |        |
+| `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |      | X |    | X  | X  |        |
+| `TMP_STORE`   |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
 
 
 ### Clocks

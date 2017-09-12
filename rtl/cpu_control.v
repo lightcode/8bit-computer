@@ -26,21 +26,23 @@ module cpu_control(
       0: state = `STATE_FETCH_PC;
       1: state = `STATE_FETCH_INST;
       2: state = (code == `OP_HLT) ? `STATE_HALT :
-                 (code == `OP_OUT) ? `STATE_OUT_A :
                  (code == `OP_MOV) ? `STATE_MOV_FETCH :
                  (code == `OP_ALU) ? `STATE_ALU_OP :
                  (code == `OP_RET) ? `STATE_INC_SP :
-                 (code == `OP_CALL || code == `OP_LDI || code == `OP_JMP) ? `STATE_FETCH_PC :
+                 (code == `OP_IN || code == `OP_OUT || code == `OP_CALL || code == `OP_LDI || code == `OP_JMP) ? `STATE_FETCH_PC :
                  `STATE_NEXT;
       3: state = (code == `OP_JMP) ? `STATE_JUMP :
                  (code == `OP_LDI) ? `STATE_LDI :
                  (code == `OP_MOV) ? `STATE_MOV_LOAD :
+                 (code == `OP_OUT || code == `OP_IN) ? `STATE_SET_ADDR :
                  (code == `OP_CALL) ? `STATE_TMP_STORE :
                  (code == `OP_RET) ? `STATE_FETCH_SP :
                  `STATE_NEXT;
       4: state = (code == `OP_MOV) ? `STATE_MOV_STORE :
                  (code == `OP_CALL) ? `STATE_FETCH_SP :
                  (code == `OP_RET) ? `STATE_RET :
+                 (code == `OP_OUT) ? `STATE_OUT :
+                 (code == `OP_IN) ? `STATE_IN :
                  `STATE_NEXT;
       5: state = (code == `OP_CALL) ? `STATE_PC_STORE :
                  `STATE_NEXT;

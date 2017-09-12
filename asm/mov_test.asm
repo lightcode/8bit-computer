@@ -5,11 +5,11 @@ start:
 ldi B 42
 mov M B %k
 mov A M %k
-out
+out 0
 
 ldi B 21
 mov A B
-out
+out 0
 
 hlt
 

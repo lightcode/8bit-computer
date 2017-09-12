@@ -9,7 +9,8 @@ inst = {
     "call": 0b00000001,
     "ret": 0b00000010,
     "lda": 0b10000111,
-    "out": 0x03,
+    "out": 0b00000011,
+    "in": 0b00000100,
     "hlt": 0x05,
     "sta": 0b10111000,
     "jmp": 0b00011000,
@@ -99,4 +100,4 @@ for i, b in enumerate(mem):
     if str(b).startswith("%"):
         mem[i] = data_addr[b.lstrip("%")]
 
-print ' '.join(['%02x' % b for b in mem])
+print ' '.join(['%02x' % int(b) for b in mem])
