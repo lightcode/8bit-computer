@@ -1,17 +1,22 @@
 COMPUTER    = $(wildcard rtl/*.v)
 LIBRARIES   = $(wildcard rtl/library/*.v)
 
-computer:
+build:
 	iverilog -o computer -Wall \
 		$(COMPUTER) \
 		$(LIBRARIES) \
 		rtl/tb/machine_tb.v
 
-run_computer: computer
+run: build
 	vvp -n computer
 
-clean_computer:
+clean:
 	rm -rf computer
 
 view:
 	gtkwave machine.vcd gtkwave/config.gtkw
+
+tests:
+	bats tests/tests.bats
+
+.PHONY: build run clean view tests
