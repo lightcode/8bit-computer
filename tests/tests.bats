@@ -8,7 +8,7 @@ function compile_and_run() {
 }
 
 @test "test I/O" {
-  compile_and_run io_test.asm | grep 'REGISTERS: A: ff, B: xx, C: xx, D: xx, E: xx, F: xx, G: xx, Temp: xx'
+  compile_and_run io_test.asm | grep -E 'REGISTERS: A: ff, B: [xz]+, C: [xz]+, D: [xz]+, E: [xz]+, F: [xz]+, G: [xz]+, Temp: [xz]+'
 }
 
 @test "test call" {

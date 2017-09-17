@@ -43,14 +43,14 @@ module machine(
   // ==========================
 
   always @ (posedge mem_io & mem_clk) begin
-    if (addr_bus == 4'h00)
+    if (addr_bus == 8'h00)
       $display("Output: %d ($%h)", bus, bus);
-    else if (addr_bus == 4'h01)
+    else if (addr_bus == 8'h01)
       $display("Input: set $FF on data bus");
     else
       $display("Unknown I/O on address $%h: %d ($%h)", addr_bus, bus, bus);
   end
 
-  assign bus = (mem_io & mem_clk & (addr_bus == 4'h01)) ? 8'hFF : 8'hZZ;
+  assign bus = (mem_io & mem_clk & (addr_bus == 8'h01)) ? 8'hFF : 8'hZZ;
 
 endmodule
