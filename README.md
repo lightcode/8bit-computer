@@ -49,10 +49,10 @@ Legend:
 
 | Instruction   | Description                                                |
 |---------------|------------------------------------------------------------|
-| `add`       | Perform A = A + B (A, B are registers)                       |
-| `sub`       | Perform A = A - B (A, B are registers)                       |
-| `inc`       | Perform A = A + 1 (A is a register)                          |
-| `dec`       | Perform A = A - 1 (A is a register)                          |
+| `add`         | Perform A = A + B (A, B are registers)                     |
+| `sub`         | Perform A = A - B (A, B are registers)                     |
+| `inc`         | Perform A = A + 1 (A is a register)                        |
+| `dec`         | Perform A = A - 1 (A is a register)                        |
 
 
 #### Branching group
@@ -84,6 +84,14 @@ Legend:
 | `out D`       | Put the content of accumulator on the data bus and set _D_ on address bus    |
 
 
+#### Stack operation group
+
+| Instruction   | Description                                                 |
+|---------------|-------------------------------------------------------------|
+| `push r`      | Push the content of register _r_ on the stack               |
+| `pop r`       | Pop the content from the stack and put it into register _r_ |
+
+
 
 ## Internal function
 
@@ -105,6 +113,8 @@ List of instruction associated with states:
 | `MOV`       | `MOV_FETCH` | `MOV_LOAD`  | `MOV_STORE` |            |            |
 | `CALL`      | `FETCH_PC`  | `TMP_STORE` | `FETCH_SP`  | `PC_STORE` | `TMP_JUMP` |
 | `RET`       | `INC_SP`    | `FETCH_SP`  | `RET`       |            |            |
+| `PUSH`      | `FETCH_SP`  | `REG_STORE` |             |            |            |
+| `POP`       | `INC_SP`    | `FETCH_SP`  | `SET_REG`   |            |            |
 
 
 States versus signals enabled:
@@ -125,8 +135,10 @@ States versus signals enabled:
 | `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |        |
 | `OUT`         |    |    |    |     | X   |    |    |    |    |      |   |    |    |    | X      |
 | `PC_STORE`    |    |    | X  |     |     |    |    |    | X  |      |   |    |    |    |        |
+| `REG_STORE`   |    |    |    |     | X   |    |    |    | X  |      |   |    | X  | X  |        |
 | `RET`         |    | X  |    |     |     |    |    | X  |    |      | X |    |    |    |        |
 | `SET_ADDR`    |    |    |    |     |     |    | X  | X  |    |      |   |    |    |    |        |
+| `SET_REG`     |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
 | `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |      | X |    | X  | X  |        |
 | `TMP_STORE`   |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
 

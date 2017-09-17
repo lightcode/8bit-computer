@@ -18,6 +18,8 @@ inst = {
     "jnz": 0b00011010,
     "je":  0b00011011,
     "jne": 0b00011100,
+    "push": 0b00100000,
+    "pop": 0b00101000,
     "add": 0b01000000,
     "sub": 0b01001000,
     "inc": 0b01010000,
@@ -73,6 +75,10 @@ with open(progf) as f:
                         kw[0] = (inst[kw[0]] & 0b11111000) | r
                         del kw[1]
                         kw[1] = int(kw[1])
+                    elif current_inst in ("push", "pop"):
+                        r = reg[kw[1]]
+                        kw[0] = (inst[kw[0]] & 0b11111000) | r
+                        del kw[1]
                     elif current_inst == "mov":
                         op1 = reg[kw[1]]
                         op2 = reg[kw[2]]

@@ -6,13 +6,17 @@
 `define OP_HLT  8'b00_000_101
 `define OP_LDI  8'b00_010_000
 `define OP_JMP  8'b00_011_000
+`define OP_PUSH 8'b00_100_000
+`define OP_POP  8'b00_101_000
 `define OP_ALU  8'b01_000_000
 `define OP_MOV  8'b10_000_000
 
-`define PATTERN_LDI 8'b00_010_???
-`define PATTERN_JMP 8'b00_011_???
-`define PATTERN_MOV 8'b10_???_???
-`define PATTERN_ALU 8'b01_???_000
+`define PATTERN_LDI  8'b00_010_???
+`define PATTERN_JMP  8'b00_011_???
+`define PATTERN_MOV  8'b10_???_???
+`define PATTERN_ALU  8'b01_???_000
+`define PATTERN_PUSH 8'b00_100_???
+`define PATTERN_POP  8'b00_101_???
 
 
 `define STATE_NEXT             8'h00
@@ -34,6 +38,8 @@
 `define STATE_INC_SP           8'h10
 `define STATE_SET_ADDR         8'h11
 `define STATE_IN               8'h12
+`define STATE_REG_STORE        8'h13
+`define STATE_SET_REG          8'h14
 
 `define ALU_ADD 3'b000
 `define ALU_SUB 3'b001
@@ -48,3 +54,12 @@
 
 `define REG_A 3'b000
 `define REG_T 3'b111
+
+`define T1 4'b0000
+`define T2 4'b0001
+`define T3 4'b0010
+`define T4 4'b0011
+`define T5 4'b0100
+`define T6 4'b0101
+`define T7 4'b0110
+`define T8 4'b0111

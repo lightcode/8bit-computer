@@ -171,11 +171,13 @@ module cpu(
   assign sel_in = (state == `STATE_ALU_OP) ? 0 :
                   (state == `STATE_LDI) ? operand2 :
                   (state == `STATE_MOV_STORE) ? operand1 :
+                  (state == `STATE_SET_REG) ? operand2 :
                   (state == `STATE_TMP_STORE) ? `REG_T :
                   (state == `STATE_IN) ? `REG_A :
                   'bx;
 
   assign sel_out = (state == `STATE_OUT) ? 0 :
+                   (state == `STATE_REG_STORE) ? operand2 :
                    (state == `STATE_MOV_STORE) ? operand2 :
                    (state == `STATE_TMP_JUMP) ? `REG_T :
                    'bx;
@@ -184,9 +186,12 @@ module cpu(
                   state == `STATE_LDI |
                   state == `STATE_IN |
                   state == `STATE_TMP_STORE |
+                  state == `STATE_SET_ADDR |
+                  state == `STATE_SET_REG |
                   (state == `STATE_MOV_STORE & operand1 != 3'b111);
   assign c_rfo  = state == `STATE_OUT |
                   state == `STATE_TMP_JUMP |
+                  state == `STATE_REG_STORE |
                   (state == `STATE_MOV_STORE & operand2 != 3'b111);
   assign c_ci   = state == `STATE_FETCH_PC |
                   state == `STATE_RET |
@@ -212,13 +217,17 @@ module cpu(
                   state == `STATE_LDI |
                   state == `STATE_RET |
                   state == `STATE_SET_ADDR |
+                  state == `STATE_SET_REG |
                   (state == `STATE_MOV_LOAD & mov_memory) |
                   (state == `STATE_MOV_STORE & operand2 == 3'b111);
   assign c_ri   = (state == `STATE_MOV_STORE & operand1 == 3'b111) |
+                  state == `STATE_REG_STORE |
                   state == `STATE_PC_STORE;
   assign c_so   = state == `STATE_FETCH_SP;
-  assign c_sd   = state == `STATE_TMP_JUMP;
+  assign c_sd   = state == `STATE_TMP_JUMP |
+                  state == `STATE_REG_STORE;
   assign c_si   = state == `STATE_TMP_JUMP |
+                  state == `STATE_REG_STORE |
                   state == `STATE_INC_SP;
 
   cpu_control m_ctrl (

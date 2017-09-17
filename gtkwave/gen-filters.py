@@ -32,6 +32,8 @@ regs = {
 
 for k, v in regs.items():
     instructions["0001 0" + k] = "LDI " + v
+    instructions["0010 0" + k] = "PUSH " + v
+    instructions["0010 1" + k] = "POP " + v
 
 for k1, v1 in regs.items():
     for k2, v2 in regs.items():
