@@ -109,9 +109,9 @@ List of instruction associated with states:
 | `IN `       | `FETCH_PC`  | `SET_ADDR`  | `IN`        |            |            |
 | `HLT`       | `HALT`      |             |             |            |            |
 | `JMP`       | `FETCH_PC`  | `JUMP`      |             |            |            |
-| `LDI`       | `FETCH_PC`  | `LDI`       |             |            |            |
+| `LDI`       | `FETCH_PC`  | `SET_REG`   |             |            |            |
 | `MOV`       | `MOV_FETCH` | `MOV_LOAD`  | `MOV_STORE` |            |            |
-| `CALL`      | `FETCH_PC`  | `TMP_STORE` | `FETCH_SP`  | `PC_STORE` | `TMP_JUMP` |
+| `CALL`      | `FETCH_PC`  | `SET_REG`   | `FETCH_SP`  | `PC_STORE` | `TMP_JUMP` |
 | `RET`       | `INC_SP`    | `FETCH_SP`  | `RET`       |            |            |
 | `PUSH`      | `FETCH_SP`  | `REG_STORE` |             |            |            |
 | `POP`       | `INC_SP`    | `FETCH_SP`  | `SET_REG`   |            |            |
@@ -129,7 +129,6 @@ States versus signals enabled:
 | `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    | X  |        |
 | `IN`          |    |    |    | X   |     |    |    |    |    |      |   |    |    |    | X      |
 | `JUMP`        |    | *  |    |     |     |    |    | *  |    |      | * |    |    |    |        |
-| `LDI`         |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
 | `MOV_FETCH`   |    | *  | *  |     |     |    | *  |    |    |      |   |    |    |    |        |
 | `MOV_LOAD`    |    |    |    | *   | *   |    | *  | *  |    |      |   |    |    |    |        |
 | `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |        |
@@ -140,7 +139,6 @@ States versus signals enabled:
 | `SET_ADDR`    |    |    |    |     |     |    | X  | X  |    |      |   |    |    |    |        |
 | `SET_REG`     |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
 | `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |      | X |    | X  | X  |        |
-| `TMP_STORE`   |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
 
 
 ### Clocks

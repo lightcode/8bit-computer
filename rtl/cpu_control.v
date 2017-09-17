@@ -35,11 +35,11 @@ module cpu_control(
                    (code == `OP_IN || code == `OP_OUT || code == `OP_CALL || code == `OP_LDI || code == `OP_JMP) ? `STATE_FETCH_PC :
                    `STATE_NEXT;
       `T4: state = (code == `OP_JMP) ? `STATE_JUMP :
-                   (code == `OP_LDI) ? `STATE_LDI :
+                   (code == `OP_LDI) ? `STATE_SET_REG :
                    (code == `OP_MOV) ? `STATE_MOV_LOAD :
                    (code == `OP_OUT || code == `OP_IN) ? `STATE_SET_ADDR :
                    (code == `OP_PUSH) ? `STATE_REG_STORE :
-                   (code == `OP_CALL) ? `STATE_TMP_STORE :
+                   (code == `OP_CALL) ? `STATE_SET_REG :
                    (code == `OP_RET || code == `OP_POP) ? `STATE_FETCH_SP :
                    `STATE_NEXT;
       `T5: state = (code == `OP_MOV) ? `STATE_MOV_STORE :

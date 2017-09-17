@@ -26,11 +26,9 @@
 `define STATE_JUMP             8'h04
 `define STATE_OUT              8'h05
 `define STATE_ALU_OP           8'h06
-`define STATE_LDI              8'h07
 `define STATE_MOV_STORE        8'h08
 `define STATE_MOV_FETCH        8'h09
 `define STATE_MOV_LOAD         8'h0a
-`define STATE_TMP_STORE        8'h0b
 `define STATE_FETCH_SP         8'h0c
 `define STATE_PC_STORE         8'h0d
 `define STATE_TMP_JUMP         8'h0e

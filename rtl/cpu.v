@@ -168,24 +168,21 @@ module cpu(
                        (operand2 == `JMP_JNE & !alu_equal);
   assign alu_mode     = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
-  assign sel_in = (state == `STATE_ALU_OP) ? 0 :
-                  (state == `STATE_LDI) ? operand2 :
+  assign sel_in = (state == `STATE_ALU_OP) ? `REG_A :
                   (state == `STATE_MOV_STORE) ? operand1 :
-                  (state == `STATE_SET_REG) ? operand2 :
-                  (state == `STATE_TMP_STORE) ? `REG_T :
+                  (opcode == `OP_POP || {opcode[7:3], 3'b000} == `OP_LDI) ? operand2 :
+                  (opcode == `OP_CALL) ? `REG_T :
                   (state == `STATE_IN) ? `REG_A :
                   'bx;
 
-  assign sel_out = (state == `STATE_OUT) ? 0 :
+  assign sel_out = (state == `STATE_OUT) ? `REG_A :
                    (state == `STATE_REG_STORE) ? operand2 :
                    (state == `STATE_MOV_STORE) ? operand2 :
                    (state == `STATE_TMP_JUMP) ? `REG_T :
                    'bx;
 
   assign c_rfi  = state == `STATE_ALU_OP |
-                  state == `STATE_LDI |
                   state == `STATE_IN |
-                  state == `STATE_TMP_STORE |
                   state == `STATE_SET_ADDR |
                   state == `STATE_SET_REG |
                   (state == `STATE_MOV_STORE & operand1 != 3'b111);
@@ -212,9 +209,7 @@ module cpu(
                   state == `STATE_SET_ADDR |
                   ((state == `STATE_MOV_FETCH | state == `STATE_MOV_LOAD) & mov_memory);
   assign c_ro   = state == `STATE_FETCH_INST |
-                  state == `STATE_TMP_STORE |
                   (state == `STATE_JUMP & jump_allowed) |
-                  state == `STATE_LDI |
                   state == `STATE_RET |
                   state == `STATE_SET_ADDR |
                   state == `STATE_SET_REG |
