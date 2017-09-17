@@ -12,7 +12,7 @@ function compile_and_run() {
 }
 
 @test "test call" {
-  compile_and_run call_test.asm | grep 'Output:  42'
+  compile_and_run call_test.asm | awk '/Output:/ { print $2; }' | tr '\n' ' ' | grep '10 42 10'
 }
 
 @test "test multiplication" {
