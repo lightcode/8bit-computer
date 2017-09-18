@@ -148,17 +148,18 @@ module cpu(
 
   wire c_halt, next_state, mov_memory, jump_allowed;
   wire [7:0] state;
+  wire [7:0] instruction;
   wire [7:0] opcode;
   wire [3:0] cycle;
   wire [2:0] operand1;
   wire [2:0] operand2;
 
-  assign opcode     = regi_out;
-  assign operand1   = opcode[5:3];
-  assign operand2   = opcode[2:0];
-  assign next_state = state == `STATE_NEXT | reset;
+  assign instruction = regi_out;
+  assign operand1    = instruction[5:3];
+  assign operand2    = instruction[2:0];
+  assign next_state  = state == `STATE_NEXT | reset;
 
-  assign mem_io     = state == `STATE_OUT | state == `STATE_IN;
+  assign mem_io = state == `STATE_OUT | state == `STATE_IN;
 
   assign mov_memory   = operand1 == 3'b111 | operand2 == 3'b111;
   assign jump_allowed = operand2 == `JMP_JMP |
@@ -168,17 +169,15 @@ module cpu(
                        (operand2 == `JMP_JNE & !alu_equal);
   assign alu_mode     = (state == `STATE_ALU_OP) ? operand1 : 'bx;
 
-  assign sel_in = (state == `STATE_ALU_OP) ? `REG_A :
-                  (state == `STATE_MOV_STORE) ? operand1 :
-                  (opcode == `OP_POP || {opcode[7:3], 3'b000} == `OP_LDI) ? operand2 :
+  assign sel_in = (opcode == `OP_ALU | opcode == `OP_IN) ? `REG_A :
+                  (opcode == `OP_MOV) ? operand1 :
+                  (opcode == `OP_POP | opcode == `OP_LDI) ? operand2 :
                   (opcode == `OP_CALL) ? `REG_T :
-                  (state == `STATE_IN) ? `REG_A :
                   'bx;
 
-  assign sel_out = (state == `STATE_OUT) ? `REG_A :
-                   (state == `STATE_REG_STORE) ? operand2 :
-                   (state == `STATE_MOV_STORE) ? operand2 :
-                   (state == `STATE_TMP_JUMP) ? `REG_T :
+  assign sel_out = (opcode == `OP_OUT) ? `REG_A :
+                   (opcode == `OP_PUSH | opcode == `OP_MOV) ? operand2 :
+                   (opcode == `OP_CALL) ? `REG_T :
                    'bx;
 
   assign c_rfi  = state == `STATE_ALU_OP |
@@ -226,11 +225,12 @@ module cpu(
                   state == `STATE_INC_SP;
 
   cpu_control m_ctrl (
-    .opcode(opcode),
+    .instruction(instruction),
     .state(state),
     .reset_cycle(next_state),
     .clk(cycle_clk),
-    .cycle(cycle)
+    .cycle(cycle),
+    .opcode(opcode)
   );
 
   always @ (posedge c_halt) begin
