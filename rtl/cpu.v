@@ -11,6 +11,9 @@ module cpu(
 
   `include "rtl/parameters.v"
 
+  wire flag_zero;
+
+
   // ==========================
   // Clocks
   // ==========================
@@ -121,19 +124,19 @@ module cpu(
   // ==========================
 
   wire c_eo;
-  wire eq_zero;
-  wire alu_equal;
+  wire c_ee;
   wire [7:0] alu_out;
   wire [2:0] alu_mode;
   alu m_alu (
+    .clk(internal_clk),
+    .enable(c_ee),
     .cin(1'b0),
     .cout(),
     .in_a(rega_out),
     .in_b(regb_out),
     .out(alu_out),
     .mode(alu_mode),
-    .eq_zero(eq_zero),
-    .equal(alu_equal)
+    .flag_zero(flag_zero)
   );
   tristate_buffer m_alu_buf (
     .in(alu_out),
@@ -163,11 +166,10 @@ module cpu(
 
   assign mov_memory   = operand1 == 3'b111 | operand2 == 3'b111;
   assign jump_allowed = operand2 == `JMP_JMP |
-                       (operand2 == `JMP_JZ & eq_zero) |
-                       (operand2 == `JMP_JNZ & !eq_zero) |
-                       (operand2 == `JMP_JE & alu_equal) |
-                       (operand2 == `JMP_JNE & !alu_equal);
-  assign alu_mode     = (state == `STATE_ALU_OP) ? operand1 : 'bx;
+                       (operand2 == `JMP_JZ & flag_zero) |
+                       (operand2 == `JMP_JNZ & !flag_zero);
+  assign alu_mode     = (opcode == `OP_ALU) ? operand1 :
+                        (opcode == `OP_CMP) ? `ALU_SUB : 'bx;
 
   assign sel_in = (opcode == `OP_ALU | opcode == `OP_IN) ? `REG_A :
                   (opcode == `OP_MOV) ? operand1 :
@@ -180,7 +182,7 @@ module cpu(
                    (opcode == `OP_CALL) ? `REG_T :
                    'bx;
 
-  assign c_rfi  = state == `STATE_ALU_OP |
+  assign c_rfi  = state == `STATE_ALU_OUT |
                   state == `STATE_IN |
                   state == `STATE_SET_ADDR |
                   state == `STATE_SET_REG |
@@ -197,7 +199,7 @@ module cpu(
   assign c_co   = state == `STATE_FETCH_PC |
                   state == `STATE_PC_STORE |
                   (state == `STATE_MOV_FETCH & mov_memory);
-  assign c_eo   = state == `STATE_ALU_OP;
+  assign c_eo   = state == `STATE_ALU_OUT;
   assign c_halt = state == `STATE_HALT;
   assign c_ii   = state == `STATE_FETCH_INST;
   assign c_j    = (state == `STATE_JUMP & jump_allowed) |
@@ -223,6 +225,7 @@ module cpu(
   assign c_si   = state == `STATE_TMP_JUMP |
                   state == `STATE_REG_STORE |
                   state == `STATE_INC_SP;
+  assign c_ee   = state == `STATE_ALU_EXEC;
 
   cpu_control m_ctrl (
     .instruction(instruction),

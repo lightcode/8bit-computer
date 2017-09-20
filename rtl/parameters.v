@@ -4,6 +4,7 @@
 `define OP_OUT  8'b00_000_011
 `define OP_IN   8'b00_000_100
 `define OP_HLT  8'b00_000_101
+`define OP_CMP  8'b00_000_110
 `define OP_LDI  8'b00_010_000
 `define OP_JMP  8'b00_011_000
 `define OP_PUSH 8'b00_100_000
@@ -25,7 +26,8 @@
 `define STATE_HALT             8'h03
 `define STATE_JUMP             8'h04
 `define STATE_OUT              8'h05
-`define STATE_ALU_OP           8'h06
+`define STATE_ALU_OUT          8'h06
+`define STATE_ALU_EXEC         8'h07
 `define STATE_MOV_STORE        8'h08
 `define STATE_MOV_FETCH        8'h09
 `define STATE_MOV_LOAD         8'h0a
@@ -43,12 +45,13 @@
 `define ALU_SUB 3'b001
 `define ALU_INC 3'b010
 `define ALU_DEC 3'b011
+`define ALU_AND 3'b100
+`define ALU_OR  3'b101
+`define ALU_XOR 3'b110
 
 `define JMP_JMP 3'b000
 `define JMP_JZ  3'b001
 `define JMP_JNZ 3'b010
-`define JMP_JE  3'b011
-`define JMP_JNE 3'b100
 
 `define REG_A 3'b000
 `define REG_T 3'b111

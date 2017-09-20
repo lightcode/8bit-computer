@@ -11,6 +11,10 @@ function compile_and_run() {
   compile_and_run io_test.asm | grep -E 'REGISTERS: A: ff, B: [xz]+, C: [xz]+, D: [xz]+, E: [xz]+, F: [xz]+, G: [xz]+, Temp: [xz]+'
 }
 
+@test "test ALU" {
+  compile_and_run alu_test.asm | grep -E 'REGISTERS: A: f0, B: 0f, C: [xz]+, D: [xz]+, E: f0, F: ff, G: 0f, Temp: [xz]+'
+}
+
 @test "test call" {
   compile_and_run call_test.asm | awk '/Output:/ { print $2; }' | tr '\n' ' ' | grep '10 42 10'
 }

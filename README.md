@@ -53,6 +53,16 @@ Legend:
 | `sub`         | Perform A = A - B (A, B are registers)                     |
 | `inc`         | Perform A = A + 1 (A is a register)                        |
 | `dec`         | Perform A = A - 1 (A is a register)                        |
+| `cmp`         | Perform A - B without updating A, just update flags        |
+
+
+#### Logical group
+
+| Instruction   | Description                                                |
+|---------------|------------------------------------------------------------|
+| `and`         | Perform A = A AND B (A, B are registers)                   |
+| `or`          | Perform A = A OR B (A, B are registers)                    |
+| `xor`         | Perform A = A XOR B (A, B are registers)                   |
 
 
 #### Branching group
@@ -104,7 +114,8 @@ List of instruction associated with states:
 | Instruction | T3          | T4          | T5          | T6         | T7         |
 |-------------|-------------|-------------|-------------|------------|------------|
 | `NOP`       |             |             |             |            |            |
-| `ALU`       | `ALU_OP`    |             |             |            |            |
+| `ALU`       | `ALU_EXEC`  | `ALU_STORE` |             |            |            |
+| `CMP`       | `ALU_EXEC`  |             |             |            |            |
 | `OUT`       | `FETCH_PC`  | `SET_ADDR`  | `OUT`       |            |            |
 | `IN `       | `FETCH_PC`  | `SET_ADDR`  | `IN`        |            |            |
 | `HLT`       | `HALT`      |             |             |            |            |
@@ -119,26 +130,27 @@ List of instruction associated with states:
 
 States versus signals enabled:
 
-| States        | II | CI | CO | RFI | RFO | EO | MI | RO | RI | HALT | J | SO | SD | SI | MEM/IO |
-|---------------|----|----|----|-----|-----|----|----|----|----|------|---|----|----|----|--------|
-| `ALU_OP`      |    |    |    | X   |     | X  |    |    |    |      |   |    |    |    |        |
-| `FETCH_INST`  | X  |    |    |     |     |    |    | X  |    |      |   |    |    |    |        |
-| `FETCH_PC`    |    | X  | X  |     |     |    | X  |    |    |      |   |    |    |    |        |
-| `FETCH_SP`    |    |    |    |     |     |    | X  |    |    |      |   | X  |    |    |        |
-| `HALT`        |    |    |    |     |     |    |    |    |    | X    |   |    |    |    |        |
-| `INC_SP`      |    |    |    |     |     |    |    |    |    |      |   |    |    | X  |        |
-| `IN`          |    |    |    | X   |     |    |    |    |    |      |   |    |    |    | X      |
-| `JUMP`        |    | *  |    |     |     |    |    | *  |    |      | * |    |    |    |        |
-| `MOV_FETCH`   |    | *  | *  |     |     |    | *  |    |    |      |   |    |    |    |        |
-| `MOV_LOAD`    |    |    |    | *   | *   |    | *  | *  |    |      |   |    |    |    |        |
-| `MOV_STORE`   |    |    |    | *   | *   |    |    | *  | *  |      |   |    |    |    |        |
-| `OUT`         |    |    |    |     | X   |    |    |    |    |      |   |    |    |    | X      |
-| `PC_STORE`    |    |    | X  |     |     |    |    |    | X  |      |   |    |    |    |        |
-| `REG_STORE`   |    |    |    |     | X   |    |    |    | X  |      |   |    | X  | X  |        |
-| `RET`         |    | X  |    |     |     |    |    | X  |    |      | X |    |    |    |        |
-| `SET_ADDR`    |    |    |    |     |     |    | X  | X  |    |      |   |    |    |    |        |
-| `SET_REG`     |    |    |    | X   |     |    |    | X  |    |      |   |    |    |    |        |
-| `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |      | X |    | X  | X  |        |
+| States        | II | CI | CO | RFI | RFO | EO | EE | MI | RO | RI | HALT | J | SO | SD | SI | MEM/IO |
+|---------------|----|----|----|-----|-----|----|----|----|----|----|------|---|----|----|----|--------|
+| `ALU_EXEC`    |    |    |    |     |     |    | X  |    |    |    |      |   |    |    |    |        |
+| `ALU_STORE`   |    |    |    | X   |     | X  |    |    |    |    |      |   |    |    |    |        |
+| `FETCH_INST`  | X  |    |    |     |     |    |    |    | X  |    |      |   |    |    |    |        |
+| `FETCH_PC`    |    | X  | X  |     |     |    |    | X  |    |    |      |   |    |    |    |        |
+| `FETCH_SP`    |    |    |    |     |     |    |    | X  |    |    |      |   | X  |    |    |        |
+| `HALT`        |    |    |    |     |     |    |    |    |    |    | X    |   |    |    |    |        |
+| `INC_SP`      |    |    |    |     |     |    |    |    |    |    |      |   |    |    | X  |        |
+| `IN`          |    |    |    | X   |     |    |    |    |    |    |      |   |    |    |    | X      |
+| `JUMP`        |    | *  |    |     |     |    |    |    | *  |    |      | * |    |    |    |        |
+| `MOV_FETCH`   |    | *  | *  |     |     |    |    | *  |    |    |      |   |    |    |    |        |
+| `MOV_LOAD`    |    |    |    | *   | *   |    |    | *  | *  |    |      |   |    |    |    |        |
+| `MOV_STORE`   |    |    |    | *   | *   |    |    |    | *  | *  |      |   |    |    |    |        |
+| `OUT`         |    |    |    |     | X   |    |    |    |    |    |      |   |    |    |    | X      |
+| `PC_STORE`    |    |    | X  |     |     |    |    |    |    | X  |      |   |    |    |    |        |
+| `REG_STORE`   |    |    |    |     | X   |    |    |    |    | X  |      |   |    | X  | X  |        |
+| `RET`         |    | X  |    |     |     |    |    |    | X  |    |      | X |    |    |    |        |
+| `SET_ADDR`    |    |    |    |     |     |    |    | X  | X  |    |      |   |    |    |    |        |
+| `SET_REG`     |    |    |    | X   |     |    |    |    | X  |    |      |   |    |    |    |        |
+| `TMP_JUMP`    |    | X  |    |     | X   |    |    |    |    |    |      | X |    | X  | X  |        |
 
 
 ### Clocks

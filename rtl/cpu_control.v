@@ -28,7 +28,7 @@ module cpu_control(
       `T2: state = `STATE_FETCH_INST;
       `T3: state = (opcode == `OP_HLT) ? `STATE_HALT :
                    (opcode == `OP_MOV) ? `STATE_MOV_FETCH :
-                   (opcode == `OP_ALU) ? `STATE_ALU_OP :
+                   (opcode == `OP_ALU || opcode == `OP_CMP) ? `STATE_ALU_EXEC :
                    (opcode == `OP_RET || opcode == `OP_POP) ? `STATE_INC_SP :
                    (opcode == `OP_PUSH) ? `STATE_FETCH_SP :
                    (opcode == `OP_IN || opcode == `OP_OUT || opcode == `OP_CALL || opcode == `OP_LDI || opcode == `OP_JMP) ? `STATE_FETCH_PC :
@@ -36,6 +36,7 @@ module cpu_control(
       `T4: state = (opcode == `OP_JMP) ? `STATE_JUMP :
                    (opcode == `OP_LDI) ? `STATE_SET_REG :
                    (opcode == `OP_MOV) ? `STATE_MOV_LOAD :
+                   (opcode == `OP_ALU) ? `STATE_ALU_OUT :
                    (opcode == `OP_OUT || opcode == `OP_IN) ? `STATE_SET_ADDR :
                    (opcode == `OP_PUSH) ? `STATE_REG_STORE :
                    (opcode == `OP_CALL) ? `STATE_SET_REG :
