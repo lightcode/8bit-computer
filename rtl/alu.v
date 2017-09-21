@@ -1,13 +1,12 @@
 module alu(
   input wire enable,
   input wire clk,
-  input wire cin,
   input wire [2:0] mode,
-  output wire cout,
   input wire [N-1:0] in_a,
   input wire [N-1:0] in_b,
   output wire [N-1:0] out,
-  output reg flag_zero
+  output reg flag_zero,
+  output reg flag_carry
 );
 
   `include "rtl/parameters.v"
@@ -16,13 +15,19 @@ module alu(
 
   reg [N-1:0] buf_out;
 
+  initial begin
+    flag_carry = 0;
+    flag_zero = 0;
+  end
+
   always @(posedge clk) begin
     if (enable) begin
       case (mode)
-        `ALU_ADD: buf_out = in_a + in_b;
-        `ALU_SUB: buf_out = in_a - in_b;
-        `ALU_INC: buf_out = in_a + 1;
-        `ALU_DEC: buf_out = in_a - 1;
+        `ALU_ADD: {flag_carry, buf_out} = in_a + in_b;
+        `ALU_ADC: {flag_carry, buf_out} = in_a + in_b + flag_carry;
+        `ALU_SUB: {flag_carry, buf_out} = in_a - in_b;
+        `ALU_INC: {flag_carry, buf_out} = in_a + 1;
+        `ALU_DEC: {flag_carry, buf_out} = in_a - 1;
         `ALU_AND: buf_out = in_a & in_b;
         `ALU_OR:  buf_out = in_a | in_b;
         `ALU_XOR: buf_out = in_a ^ in_b;

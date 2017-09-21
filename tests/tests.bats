@@ -12,7 +12,7 @@ function compile_and_run() {
 }
 
 @test "test ALU" {
-  compile_and_run alu_test.asm | grep -E 'REGISTERS: A: f0, B: 0f, C: [xz]+, D: [xz]+, E: f0, F: ff, G: 0f, Temp: [xz]+'
+  compile_and_run alu_test.asm | grep -E 'REGISTERS: A: ff, B: 02, C: [xz]+, D: 0e, E: f0, F: ff, G: 0f, Temp: [xz]+'
 }
 
 @test "test call" {

@@ -48,6 +48,7 @@
 `define ALU_AND 3'b100
 `define ALU_OR  3'b101
 `define ALU_XOR 3'b110
+`define ALU_ADC 3'b111
 
 `define JMP_JMP 3'b000
 `define JMP_JZ  3'b001

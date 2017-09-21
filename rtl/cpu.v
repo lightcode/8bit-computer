@@ -130,13 +130,12 @@ module cpu(
   alu m_alu (
     .clk(internal_clk),
     .enable(c_ee),
-    .cin(1'b0),
-    .cout(),
     .in_a(rega_out),
     .in_b(regb_out),
     .out(alu_out),
     .mode(alu_mode),
-    .flag_zero(flag_zero)
+    .flag_zero(flag_zero),
+    .flag_carry()
   );
   tristate_buffer m_alu_buf (
     .in(alu_out),

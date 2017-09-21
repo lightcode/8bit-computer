@@ -50,6 +50,7 @@ Legend:
 | Instruction   | Description                                                |
 |---------------|------------------------------------------------------------|
 | `add`         | Perform A = A + B (A, B are registers)                     |
+| `adc`         | Perform A = A + B + carry (A, B are registers)             |
 | `sub`         | Perform A = A - B (A, B are registers)                     |
 | `inc`         | Perform A = A + 1 (A is a register)                        |
 | `dec`         | Perform A = A - 1 (A is a register)                        |

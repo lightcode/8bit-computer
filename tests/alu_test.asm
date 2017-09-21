@@ -13,4 +13,12 @@ ldi A 255
 xor
 mov E A
 
+ldi A 255
+add
+mov D A
+
+ldi A 1
+ldi B 2
+sub
+
 hlt
