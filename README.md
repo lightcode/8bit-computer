@@ -68,15 +68,17 @@ Legend:
 
 #### Branching group
 
-| Instruction   | Description                                                |
-|---------------|------------------------------------------------------------|
-| `jmp D`       | Jump to _D_                                                |
-| `jz D `       | Jump to _D_ if register A is equal to zero                 |
-| `jnz D`       | Jump to _D_ if register A is not equal to zero             |
-| `je D `       | Jump to _D_ if register A is equal to register B           |
-| `jne D`       | Jump to _D_ if register A is not equal to register B       |
-| `call D`      | Call sub-routine _D_                                       |
-| `ret`         | Return to the parent routine                               |
+| Instruction   | Description                                                                  |
+|---------------|------------------------------------------------------------------------------|
+| `jmp D`       | Jump to _D_                                                                  |
+| `jz D `       | Jump to _D_ if flag zero is set                                              |
+| `jnz D`       | Jump to _D_ if flag zero is not set                                          |
+| `je D `       | Jump to _D_ if register A equals register B after `cmp` (alias `jz`)         |
+| `jne D`       | Jump to _D_ if register A doesn't equal register B after `cmp` (alias `jnz`) |
+| `jc D `       | Jump to _D_ if carry flag is set                                             |
+| `jnc D`       | Jump to _D_ if carry flag is not set                                         |
+| `call D`      | Call sub-routine _D_                                                         |
+| `ret`         | Return to the parent routine                                                 |
 
 
 #### Machine control

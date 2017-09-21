@@ -53,6 +53,8 @@
 `define JMP_JMP 3'b000
 `define JMP_JZ  3'b001
 `define JMP_JNZ 3'b010
+`define JMP_JC  3'b011
+`define JMP_JNC 3'b100
 
 `define REG_A 3'b000
 `define REG_T 3'b111

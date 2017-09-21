@@ -12,6 +12,7 @@ module cpu(
   `include "rtl/parameters.v"
 
   wire flag_zero;
+  wire flag_carry;
 
 
   // ==========================
@@ -135,7 +136,7 @@ module cpu(
     .out(alu_out),
     .mode(alu_mode),
     .flag_zero(flag_zero),
-    .flag_carry()
+    .flag_carry(flag_carry)
   );
   tristate_buffer m_alu_buf (
     .in(alu_out),
@@ -164,9 +165,11 @@ module cpu(
   assign mem_io = state == `STATE_OUT | state == `STATE_IN;
 
   assign mov_memory   = operand1 == 3'b111 | operand2 == 3'b111;
-  assign jump_allowed = operand2 == `JMP_JMP |
-                       (operand2 == `JMP_JZ & flag_zero) |
-                       (operand2 == `JMP_JNZ & !flag_zero);
+  assign jump_allowed = operand2 == `JMP_JMP
+                      | ((operand2 == `JMP_JZ) & flag_zero)
+                      | ((operand2 == `JMP_JNZ) & ~flag_zero)
+                      | ((operand2 == `JMP_JC) & flag_carry)
+                      | ((operand2 == `JMP_JNC) & ~flag_carry);
   assign alu_mode     = (opcode == `OP_ALU) ? operand1 :
                         (opcode == `OP_CMP) ? `ALU_SUB : 'bx;
 
