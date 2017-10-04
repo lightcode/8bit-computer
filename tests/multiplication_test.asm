@@ -1,21 +1,21 @@
-.program
+.text
 
 start:
 
-lda %r
-ldi B 4
-add
-sta %r
+	lda %r
+	ldi B 4
+	add
+	sta %r
 
-lda %i
-dec
-sta %i
+	lda %i
+	dec
+	sta %i
 
-jnz %start
+	jnz %start
 
-lda %r
-out 0
-hlt
+	lda %r
+	out 0
+	hlt
 
 
 .data

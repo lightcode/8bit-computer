@@ -1,6 +1,4 @@
-.program
-
-start:
+.text
 
 ldi B 42
 mov M B %k

@@ -1,19 +1,19 @@
-.program
+.text
 
-ldi A 255
-ldi B 15
+ldi A 0xFF
+ldi B 0x0F
 and
 mov G A
 
-ldi A 255
+ldi A 0xFF
 or
 mov F A
 
-ldi A 255
+ldi A 0xFF
 xor
 mov E A
 
-ldi A 255
+ldi A 0xFF
 add
 mov D A
 

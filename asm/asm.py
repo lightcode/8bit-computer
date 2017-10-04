@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+import re
 import sys
 
 progf = sys.argv[1]
@@ -46,7 +47,7 @@ reg = {
     "M": 0b111,
 }
 
-PROGRAM, DATA = 0, 1
+TEXT, DATA = 0, 1
 MEM_SIZE = 256
 
 mem = [0 for _ in range(MEM_SIZE)]
@@ -56,21 +57,31 @@ labels = {}
 data = {}
 data_addr = {}
 
+def rich_int(v):
+    if v.startswith("0x"):
+        return int(v, 16)
+    elif v.startswith("0b"):
+        return int(v, 2)
+    else:
+        return int(v)
+
 with open(progf) as f:
     for l in f:
+        l = re.sub(";.*", "", l)
+
         l = l.strip()
         if l == "":
             continue
 
-        if l == ".program":
-            section = PROGRAM
+        if l == ".text":
+            section = TEXT
         elif l == ".data":
             section = DATA
         else:
             if section == DATA:
                 n, v = map(str.strip, l.split("=", 2))
                 data[str(n)] = int(v)
-            elif section == PROGRAM:
+            elif section == TEXT:
                 kw = l.split()
                 if kw[0][-1] == ":":
                     labels[kw[0].rstrip(":")] = cnt
@@ -81,7 +92,7 @@ with open(progf) as f:
                         r = reg[kw[1]]
                         kw[0] = (inst[kw[0]] & 0b11111000) | r
                         del kw[1]
-                        kw[1] = int(kw[1])
+                        kw[1] = rich_int(kw[1])
                     elif current_inst in ("push", "pop"):
                         r = reg[kw[1]]
                         kw[0] = (inst[kw[0]] & 0b11111000) | r
