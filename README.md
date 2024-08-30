@@ -12,7 +12,7 @@ This project contains:
 Build an exemple:
 
 ```
-./asm/asm.py tests/multiplication.asm > memory.list
+./asm/asm.py tests/multiplication_test.asm > memory.list
 ```
 
 Run the computer:
