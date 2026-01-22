@@ -8,11 +8,17 @@ This project contains:
 
 
 ## How to use it
+This project build in python3.x 
 
 Build an exemple:
 
 ```
 ./asm/asm.py tests/multiplication_test.asm > memory.list
+```
+
+or 
+```
+bash script.sh
 ```
 
 Run the computer:
