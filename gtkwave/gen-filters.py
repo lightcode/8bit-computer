@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 instructions = {
     "0000 0000": "NOP",
@@ -35,24 +35,27 @@ regs = {
     "110": "G"
 }
 
+# LDI, PUSH, POP instructions
 for k, v in regs.items():
     instructions["0001 0" + k] = "LDI " + v
     instructions["0010 0" + k] = "PUSH " + v
     instructions["0010 1" + k] = "POP " + v
 
+# MOV between registers
 for k1, v1 in regs.items():
     for k2, v2 in regs.items():
         if k1 == k2:
             txt = "invalid"
         else:
-            txt = " ".join((v1, v2))
+            txt = f"{v1} {v2}"
 
-        instructions[" ".join(("10", k1, k2))] = "MOV " + txt
+        instructions["10" + k1 + k2] = "MOV " + txt
 
-
+# MOV to/from memory
 for k, v in regs.items():
-    instructions["10 111 %s" % k] = "MOV M %s" % v
-    instructions["10 %s 111" % k] = "MOV %s M" % v
+    instructions[f"10 111 {k}"] = f"MOV M {v}"
+    instructions[f"10 {k} 111"] = f"MOV {v} M"
 
-for k, v in instructions.items():
-    print k.replace(" ", ""), v
+# Print sorted instructions
+for k, v in sorted(instructions.items()):
+    print(k.replace(" ", ""), v)

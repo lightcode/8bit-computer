@@ -1,10 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import re
 import sys
 
+# Get the input assembly program filename from command line arguments
 progf = sys.argv[1]
 
+# Dictionary mapping assembly instructions to their opcodes
 inst = {
     "nop": 0x00,
     "call": 0b00000001,
@@ -36,6 +38,7 @@ inst = {
     "mov": 0b10000000,
 }
 
+# Register mapping to 3-bit codes
 reg = {
     "A": 0b000,
     "B": 0b001,
@@ -47,7 +50,10 @@ reg = {
     "M": 0b111,
 }
 
+# Section constants
 TEXT, DATA = 0, 1
+
+# Memory size (256 bytes)
 MEM_SIZE = 256
 
 mem = [0 for _ in range(MEM_SIZE)]
@@ -57,6 +63,7 @@ labels = {}
 data = {}
 data_addr = {}
 
+# Helper function to parse integers in decimal, hex (0x), or binary (0b)
 def rich_int(v):
     if v.startswith("0x"):
         return int(v, 16)
@@ -79,7 +86,7 @@ with open(progf) as f:
             section = DATA
         else:
             if section == DATA:
-                n, v = map(str.strip, l.split("=", 2))
+                n, v = list(map(str.strip, l.split("=", 2)))
                 data[str(n)] = int(v)
             elif section == TEXT:
                 kw = l.split()
@@ -111,8 +118,10 @@ with open(progf) as f:
                         mem[cnt] = a
                         cnt += 1
 
+data = dict(sorted(data.items()))
+
 # Write data into memory
-for k, v in data.items():
+for k, v in list(data.items()):
     data_addr[k] = cnt
     mem[cnt] = v
     cnt += 1
@@ -124,4 +133,4 @@ for i, b in enumerate(mem):
     if str(b).startswith("%"):
         mem[i] = data_addr[b.lstrip("%")]
 
-print ' '.join(['%02x' % int(b) for b in mem])
+print(' '.join(['%02x' % int(b) for b in mem]))
